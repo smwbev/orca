@@ -67,12 +67,24 @@ export function GitHubIntegrationCard(): React.JSX.Element {
       statusTone={connected ? 'connected' : 'attention'}
       statusLabel={
         connected
-          ? 'Connected'
+          ? translate(
+              'auto.components.settings.cli.source.control.integration.cards.statusConnected',
+              'Connected'
+            )
           : status === 'unavailable'
-            ? 'Unavailable'
+            ? translate(
+                'auto.components.settings.cli.source.control.integration.cards.statusUnavailable',
+                'Unavailable'
+              )
             : status === 'not-installed'
-              ? 'Not installed'
-              : 'Not authenticated'
+              ? translate(
+                  'auto.components.settings.cli.source.control.integration.cards.statusNotInstalled',
+                  'Not installed'
+                )
+              : translate(
+                  'auto.components.settings.cli.source.control.integration.cards.statusNotAuthenticated',
+                  'Not authenticated'
+                )
       }
     >
       <ProviderAccountScopeDetails>
@@ -196,12 +208,24 @@ export function GitLabIntegrationCard(): React.JSX.Element {
       statusTone={connected ? 'connected' : 'attention'}
       statusLabel={
         connected
-          ? 'Connected'
+          ? translate(
+              'auto.components.settings.cli.source.control.integration.cards.statusConnected',
+              'Connected'
+            )
           : status === 'unavailable'
-            ? 'Unavailable'
+            ? translate(
+                'auto.components.settings.cli.source.control.integration.cards.statusUnavailable',
+                'Unavailable'
+              )
             : status === 'not-installed'
-              ? 'Not installed'
-              : 'Not authenticated'
+              ? translate(
+                  'auto.components.settings.cli.source.control.integration.cards.statusNotInstalled',
+                  'Not installed'
+                )
+              : translate(
+                  'auto.components.settings.cli.source.control.integration.cards.statusNotAuthenticated',
+                  'Not authenticated'
+                )
       }
     >
       <ProviderAccountScopeDetails>

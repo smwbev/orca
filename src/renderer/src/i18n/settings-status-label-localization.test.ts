@@ -53,13 +53,15 @@ const REQUIRED_KEYS: Record<string, string> = {
 
 const INTERPOLATED_KEYS: Record<string, string[]> = {
   'auto.components.stats.StatsPane.trackingSince': ['{{value0}}'],
-  'auto.components.settings.OrchestrationSkillAgentCoverage.fullCoverage': ['{{value0}}'],
+  'auto.components.settings.computerUseSummary.permissionsRequired_one': [],
+  'auto.components.settings.computerUseSummary.permissionsRequired_other': ['{{value0}}'],
+  'auto.components.settings.computerUseSummary.unavailableDescription': ['{{value0}}'],
+  'auto.components.settings.OrchestrationSkillAgentCoverage.fullCoverage_one': [],
+  'auto.components.settings.OrchestrationSkillAgentCoverage.fullCoverage_other': ['{{value0}}'],
   'auto.components.settings.OrchestrationSkillAgentCoverage.partialCoverage': [
     '{{value0}}',
     '{{value1}}'
-  ],
-  'auto.components.settings.computerUseSummary.unavailableDescription': ['{{value0}}'],
-  'auto.components.settings.computerUseSummary.permissionsRequired': ['{{value0}}', '{{value1}}']
+  ]
 }
 
 describe('settings and stats status labels', () => {

@@ -120,11 +120,16 @@ export function ComputerUsePane(): React.JSX.Element {
             'auto.components.settings.computerUseSummary.readyDescription',
             'Agents can inspect and operate app windows when you ask.'
           )
-        : translate(
-            'auto.components.settings.computerUseSummary.permissionsRequired',
-            '{{value0}} permission{{value1}} required before agents can operate app windows.',
-            { value0: missingCount, value1: missingCount === 1 ? '' : 's' }
-          )
+        : missingCount === 1
+          ? translate(
+              'auto.components.settings.computerUseSummary.permissionsRequired_one',
+              '1 permission required before agents can operate app windows.'
+            )
+          : translate(
+              'auto.components.settings.computerUseSummary.permissionsRequired_other',
+              '{{value0}} permissions required before agents can operate app windows.',
+              { value0: missingCount }
+            )
 
   useEffect(() => {
     mountedRef.current = true

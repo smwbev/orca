@@ -6400,7 +6400,8 @@
           "1e8f8d8fae": "Ready",
           "checking": "Checking installed agents and skill paths…",
           "noAgents": "No agent CLIs detected on PATH. Install agents in Settings → Agents, then re-check.",
-          "fullCoverage": "All {{value0}} detected agents have the skill.",
+          "fullCoverage_one": "All 1 detected agent has the skill.",
+          "fullCoverage_other": "All {{value0}} detected agents have the skill.",
           "noCoverage": "Install the skill above, then re-check.",
           "partialCoverage": "{{value0}} of {{value1}} detected agents have the skill."
         },
@@ -9297,7 +9298,8 @@
           "readyTitle": "Computer Use is ready.",
           "readyDescription": "Agents can inspect and operate app windows when you ask.",
           "permissionsTitle": "Finish setup to use local apps.",
-          "permissionsRequired": "{{value0}} permission{{value1}} required before agents can operate app windows."
+          "permissionsRequired_one": "1 permission required before agents can operate app windows.",
+          "permissionsRequired_other": "{{value0}} permissions required before agents can operate app windows."
         },
         "providerAccountScope": {
           "remoteServer": "Remote server: {{value0}}",

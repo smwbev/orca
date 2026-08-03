@@ -1,0 +1,32 @@
+import { translate } from '@/i18n/i18n'
+
+const NS = 'auto.components.settings.token.source.control.integration.cards'
+
+/**
+ * Status copy for the token-configured source-control cards (Bitbucket, Azure
+ * DevOps, Gitea). They share the same states, so the labels live in one place.
+ */
+export function tokenProviderStatusLabel(input: {
+  /** Credentials present for the provider. */
+  configured: boolean
+  /** An account was resolved with those credentials. */
+  hasAccount?: boolean
+  status: string
+  /** Gitea works read-only without a token, so its unconfigured state is softer. */
+  optional?: boolean
+}): string {
+  if (input.configured) {
+    return input.hasAccount === false
+      ? translate(`${NS}.statusConfigured`, 'Configured')
+      : translate(`${NS}.statusConnected`, 'Connected')
+  }
+  if (input.status === 'unavailable') {
+    return translate(`${NS}.statusUnavailable`, 'Unavailable')
+  }
+  if (input.status === 'not-configured') {
+    return input.optional
+      ? translate(`${NS}.statusOptionalSetup`, 'Optional setup')
+      : translate(`${NS}.statusNotConfigured`, 'Not configured')
+  }
+  return translate(`${NS}.statusAuthFailed`, 'Auth failed')
+}

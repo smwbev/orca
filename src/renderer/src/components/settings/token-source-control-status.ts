@@ -1,4 +1,11 @@
 import { translate } from '@/i18n/i18n'
+import type { AzureDevOpsStatus, BitbucketStatus, GiteaStatus } from './integrations-pane-status'
+
+/**
+ * Card status as the pane computes it: the provider's own state, or
+ * `'unavailable'` when the runtime cannot report on it at all.
+ */
+export type TokenProviderStatus = BitbucketStatus | AzureDevOpsStatus | GiteaStatus | 'unavailable'
 
 const NS = 'auto.components.settings.token.source.control.integration.cards'
 
@@ -11,7 +18,7 @@ export function tokenProviderStatusLabel(input: {
   configured: boolean
   /** An account was resolved with those credentials. */
   hasAccount?: boolean
-  status: string
+  status: TokenProviderStatus
   /** Gitea works read-only without a token, so its unconfigured state is softer. */
   optional?: boolean
 }): string {

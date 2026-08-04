@@ -3181,7 +3181,15 @@
             "b8f4a2c1d0e3": "{{value0}} orphans",
             "c7e3b1a0d9f2": "Kill {{value0}} orphan terminal",
             "d8f4c2b1e0a3": "Kill {{value0}} orphan terminals",
-            "e9a5d3c2b1f0": "Kill {{value0}}?"
+            "e9a5d3c2b1f0": "Kill {{value0}}?",
+            "terminalSessionCountOne": "{{value0}} terminal session",
+            "terminalSessionCountOther": "{{value0}} terminal sessions",
+            "memoryUnavailable": "memory unavailable",
+            "tooltipHeadline": "Resource Manager - {{value0}} - {{value1}}",
+            "spaceScanReady": "Space scan ready",
+            "sessionsGroupedByWorkspace": "Terminal sessions are grouped by workspace.",
+            "noTerminalSessions": "No terminal sessions yet.",
+            "resourceManager": "Resource Manager"
           },
           "SshStatusSegment": {
             "3ad70e0365": "Manage Remote Hosts…",
@@ -3206,7 +3214,10 @@
             "runtime_disconnect_failed": "Disconnect failed",
             "runtime_reconnecting": "Reconnecting",
             "runtime_last_close_reason": "Closed: {{value0}}",
-            "runtime_reconnect_attempt": "Attempt {{value0}}"
+            "runtime_reconnect_attempt": "Attempt {{value0}}",
+            "hostCountOne": "{{value0}} host",
+            "hostCountOther": "{{value0}} hosts",
+            "connectingHosts": "Connecting…"
           },
           "StatusBar": {
             "9659e38343": "Ports",

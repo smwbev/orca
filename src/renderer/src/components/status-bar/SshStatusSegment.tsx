@@ -19,6 +19,7 @@ import {
 import { isUserManagedRuntimeEnvironment } from '../../../../shared/runtime-environments'
 import { RuntimeHostStatusRow, type RuntimeHostConnectionState } from './RuntimeHostStatusRow'
 import { SshTargetStatusRow } from './SshTargetStatusRow'
+import { connectedHostCountLabel, connectingHostsLabel } from './ssh-status-copy'
 import type { RemoteRuntimeSharedConnectionDiagnostics } from '../../../../shared/remote-runtime-shared-control-types'
 import { connectRuntimeEnvironmentAndRecordStatus } from './runtime-environment-explicit-connect'
 
@@ -60,10 +61,6 @@ function overallDotColor(
     case 'disconnected':
       return 'bg-muted-foreground/40'
   }
-}
-
-function connectedHostCountLabel(count: number): string {
-  return `${count} ${count === 1 ? 'host' : 'hosts'}`
 }
 
 function sshStatusForOverall(status: SshConnectionStatus): HostStatus {
@@ -343,7 +340,9 @@ export function SshStatusSegment({
                 <span className="text-[11px]">
                   <span className={syncProblem ? 'text-destructive' : 'text-muted-foreground'}>
                     {syncProblemLabel ??
-                      (anyConnecting ? 'Connecting…' : connectedHostCountLabel(connectedHostCount))}
+                      (anyConnecting
+                        ? connectingHostsLabel()
+                        : connectedHostCountLabel(connectedHostCount))}
                   </span>
                 </span>
               )}

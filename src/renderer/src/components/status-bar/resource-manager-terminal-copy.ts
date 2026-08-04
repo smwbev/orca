@@ -1,5 +1,17 @@
+import { translate } from '@/i18n/i18n'
+
 export function formatTerminalSessionCount(count: number): string {
-  return `${count} terminal session${count === 1 ? '' : 's'}`
+  return count === 1
+    ? translate(
+        'auto.components.status.bar.ResourceUsageStatusSegment.terminalSessionCountOne',
+        '{{value0}} terminal session',
+        { value0: count }
+      )
+    : translate(
+        'auto.components.status.bar.ResourceUsageStatusSegment.terminalSessionCountOther',
+        '{{value0}} terminal sessions',
+        { value0: count }
+      )
 }
 
 export function getResourceManagerTooltipLines(args: {
@@ -10,20 +22,42 @@ export function getResourceManagerTooltipLines(args: {
   const rawMemoryLabel = args.memoryLabel.trim()
   const memoryLabel =
     rawMemoryLabel === '' || rawMemoryLabel === '-' || rawMemoryLabel === '—'
-      ? 'memory unavailable'
+      ? translate(
+          'auto.components.status.bar.ResourceUsageStatusSegment.memoryUnavailable',
+          'memory unavailable'
+        )
       : rawMemoryLabel
   const lines = [
-    `Resource Manager - ${memoryLabel} - ${formatTerminalSessionCount(args.sessionCount)}`
+    translate(
+      'auto.components.status.bar.ResourceUsageStatusSegment.tooltipHeadline',
+      'Resource Manager - {{value0}} - {{value1}}',
+      { value0: memoryLabel, value1: formatTerminalSessionCount(args.sessionCount) }
+    )
   ]
 
   if (args.spaceScanReady) {
-    lines.push('Space scan ready')
+    lines.push(
+      translate(
+        'auto.components.status.bar.ResourceUsageStatusSegment.spaceScanReady',
+        'Space scan ready'
+      )
+    )
   }
 
   if (args.sessionCount > 0) {
-    lines.push('Terminal sessions are grouped by workspace.')
+    lines.push(
+      translate(
+        'auto.components.status.bar.ResourceUsageStatusSegment.sessionsGroupedByWorkspace',
+        'Terminal sessions are grouped by workspace.'
+      )
+    )
   } else {
-    lines.push('No terminal sessions yet.')
+    lines.push(
+      translate(
+        'auto.components.status.bar.ResourceUsageStatusSegment.noTerminalSessions',
+        'No terminal sessions yet.'
+      )
+    )
   }
 
   return lines
@@ -33,10 +67,21 @@ export function getResourceManagerAriaLabel(args: {
   sessionCount: number
   spaceScanReady: boolean
 }): string {
-  const parts = ['Resource Manager', formatTerminalSessionCount(args.sessionCount)]
+  const parts = [
+    translate(
+      'auto.components.status.bar.ResourceUsageStatusSegment.resourceManager',
+      'Resource Manager'
+    ),
+    formatTerminalSessionCount(args.sessionCount)
+  ]
 
   if (args.spaceScanReady) {
-    parts.push('Space scan ready')
+    parts.push(
+      translate(
+        'auto.components.status.bar.ResourceUsageStatusSegment.spaceScanReady',
+        'Space scan ready'
+      )
+    )
   }
 
   return parts.join(', ')

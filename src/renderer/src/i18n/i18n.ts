@@ -7,6 +7,7 @@ import i18next, {
 import { initReactI18next } from 'react-i18next'
 
 import en from './locales/en.json'
+import { applyPluginPluralLocales } from './plugin-plural-locale'
 import { isPseudoLocalizationLocale, pseudoLocalizeString } from './pseudo-localization'
 import { DEFAULT_LOCALE, resolveUiLocale } from './supported-languages'
 import type { SupportedUiLocale } from '../../../shared/ui-locale'
@@ -129,4 +130,7 @@ export function setRendererPluginLanguagePacks(
     i18n.addResourceBundle(pack.resourceLanguage, 'translation', pack.catalog, true, true)
     registeredPluginLanguages.add(pack.resourceLanguage)
   }
+  // Why: the synthetic resource language carries no locale, so plural selection
+  // has to be told which one the pack was written for.
+  applyPluginPluralLocales(i18n, packs)
 }

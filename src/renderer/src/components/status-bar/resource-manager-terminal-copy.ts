@@ -14,11 +14,18 @@ export function formatTerminalSessionCount(count: number): string {
       )
 }
 
+/**
+ * One tooltip row. `emphasized` marks the space-scan row the segment tints;
+ * the caller used to recognize it by comparing against the English text, which
+ * silently stopped matching once the copy went through the catalog.
+ */
+export type ResourceManagerTooltipLine = { text: string; emphasized: boolean }
+
 export function getResourceManagerTooltipLines(args: {
   memoryLabel: string
   sessionCount: number
   spaceScanReady: boolean
-}): string[] {
+}): ResourceManagerTooltipLine[] {
   const rawMemoryLabel = args.memoryLabel.trim()
   const memoryLabel =
     rawMemoryLabel === '' || rawMemoryLabel === '-' || rawMemoryLabel === '—'
@@ -27,38 +34,40 @@ export function getResourceManagerTooltipLines(args: {
           'memory unavailable'
         )
       : rawMemoryLabel
-  const lines = [
-    translate(
-      'auto.components.status.bar.ResourceUsageStatusSegment.tooltipHeadline',
-      'Resource Manager - {{value0}} - {{value1}}',
-      { value0: memoryLabel, value1: formatTerminalSessionCount(args.sessionCount) }
-    )
+  const lines: ResourceManagerTooltipLine[] = [
+    {
+      text: translate(
+        'auto.components.status.bar.ResourceUsageStatusSegment.tooltipHeadline',
+        'Resource Manager - {{value0}} - {{value1}}',
+        { value0: memoryLabel, value1: formatTerminalSessionCount(args.sessionCount) }
+      ),
+      emphasized: false
+    }
   ]
 
   if (args.spaceScanReady) {
-    lines.push(
-      translate(
+    lines.push({
+      text: translate(
         'auto.components.status.bar.ResourceUsageStatusSegment.spaceScanReady',
         'Space scan ready'
-      )
-    )
+      ),
+      emphasized: true
+    })
   }
 
-  if (args.sessionCount > 0) {
-    lines.push(
-      translate(
-        'auto.components.status.bar.ResourceUsageStatusSegment.sessionsGroupedByWorkspace',
-        'Terminal sessions are grouped by workspace.'
-      )
-    )
-  } else {
-    lines.push(
-      translate(
-        'auto.components.status.bar.ResourceUsageStatusSegment.noTerminalSessions',
-        'No terminal sessions yet.'
-      )
-    )
-  }
+  lines.push({
+    text:
+      args.sessionCount > 0
+        ? translate(
+            'auto.components.status.bar.ResourceUsageStatusSegment.sessionsGroupedByWorkspace',
+            'Terminal sessions are grouped by workspace.'
+          )
+        : translate(
+            'auto.components.status.bar.ResourceUsageStatusSegment.noTerminalSessions',
+            'No terminal sessions yet.'
+          ),
+    emphasized: false
+  })
 
   return lines
 }

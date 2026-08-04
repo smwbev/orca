@@ -42,6 +42,9 @@ describe('plugin language-pack artifacts', () => {
     'PluginMarketplaceListingRow',
     'PluginMarketplacePreviewDialog',
     'PluginMarketplaceSourceDialog',
+    // Destructive confirmations: a rewrite could defuse a remove/rollback warning.
+    'PluginRemoveDialog',
+    'PluginRollbackDialog',
     'PluginVmRecipeConsentPreview'
   ])('prevents language packs from rewriting %s security copy', (component) => {
     expect(
@@ -66,6 +69,18 @@ describe('plugin language-pack artifacts', () => {
       parsePluginLanguagePackArtifact(
         JSON.stringify({
           auto: { components: { settings: { [component]: { [key]: value } } } }
+        })
+      ).ok
+    ).toBe(true)
+  })
+
+  // Why: `plugins.search.*` needs two protected containers to stay walkable,
+  // unlike the single-container component paths above.
+  it('lets a language pack translate nested settings-search chrome', () => {
+    expect(
+      parsePluginLanguagePackArtifact(
+        JSON.stringify({
+          auto: { components: { settings: { plugins: { search: { title: 'Плагины' } } } } }
         })
       ).ok
     ).toBe(true)

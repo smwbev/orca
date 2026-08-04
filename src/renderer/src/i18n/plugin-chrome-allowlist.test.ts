@@ -18,6 +18,8 @@ const SECURITY_COPY_COMPONENTS = [
   'PluginMarketplaceListingRow',
   'PluginMarketplacePreviewDialog',
   'PluginMarketplaceSourceDialog',
+  'PluginRemoveDialog',
+  'PluginRollbackDialog',
   'PluginVmRecipeConsentPreview'
 ]
 

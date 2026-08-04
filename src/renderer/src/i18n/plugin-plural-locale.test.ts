@@ -94,6 +94,32 @@ describe('plugin pack plural rules', () => {
     expect(pluralLocaleForResourceLanguage(RESOURCE_LANGUAGE)).toBeUndefined()
   })
 
+  it('canonicalizes a declared locale that Intl would otherwise reject', async () => {
+    const instance = await instanceWithPack()
+
+    // `ru_RU` and `RU-ru` are ordinary manifest slips; both name Russian.
+    applyPluginPluralLocales(instance, [pack('ru_RU')])
+    expect(pluralLocaleForResourceLanguage(RESOURCE_LANGUAGE)).toBe('ru-RU')
+    expect(render(instance, [5])).toEqual(['5 сессий'])
+
+    applyPluginPluralLocales(instance, [pack('RU-ru')])
+    expect(pluralLocaleForResourceLanguage(RESOURCE_LANGUAGE)).toBe('ru-RU')
+    expect(render(instance, [5])).toEqual(['5 сессий'])
+  })
+
+  it('ignores a locale Intl cannot resolve instead of inheriting the host locale', async () => {
+    const instance = await instanceWithPack()
+
+    // `not_a_locale` is malformed; `xx` and `tlh` are well-formed but carry no
+    // CLDR data, and Intl answers those with the host machine's locale — so the
+    // rendered forms would depend on whose computer the pack runs on.
+    for (const declared of ['not_a_locale', 'xx', 'tlh']) {
+      applyPluginPluralLocales(instance, [pack(declared)])
+      expect(pluralLocaleForResourceLanguage(RESOURCE_LANGUAGE)).toBeUndefined()
+      expect(render(instance, [1, 5])).toEqual(['1 сессия', '5 сессии'])
+    }
+  })
+
   it('follows a pack that changes its declared locale', async () => {
     const instance = await instanceWithPack()
 

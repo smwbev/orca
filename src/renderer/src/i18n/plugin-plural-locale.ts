@@ -4,17 +4,13 @@ import type { PluginLanguagePackRegistration } from '../../../shared/plugins/plu
 /**
  * Plural rules for plugin language packs.
  *
- * A pack registers its catalog under the synthetic resource language returned by
- * `pluginLanguageResourceId()` — `plugin` followed by fixed-width hex — because
- * i18next parses punctuation in language tags during resource lookup. That tag
- * carries no locale information, so i18next's plural resolver cannot build
- * `Intl.PluralRules` from it and falls back to a two-form English rule. A
- * Russian pack then renders `5 сессии` where the language needs `5 сессий`.
- *
- * The pack already declares the locale those translations were written for.
- * Feeding that declared locale to the resolver — and only to the resolver —
- * makes the CLDR categories reachable without touching resource lookup, which
- * keeps working on the synthetic tag exactly as before.
+ * A pack registers its catalog under the synthetic `plugin<hex>` resource
+ * language, which carries no locale information, so i18next cannot build
+ * `Intl.PluralRules` from it and falls back to two English forms: a Russian
+ * pack renders `5 сессии` where the language needs `5 сессий`. Feeding the
+ * locale the pack declares to the resolver — and only to the resolver — makes
+ * the CLDR categories reachable while resource lookup keeps running on the
+ * synthetic tag exactly as before.
  */
 
 type PluralRule = { resolvedOptions: () => { pluralCategories: string[] } } | undefined
@@ -25,6 +21,30 @@ type PluralResolverLike = {
 
 const declaredLocales = new Map<string, string>()
 let installedResolver: PluralResolverLike | undefined
+
+/**
+ * The declared locale is author-supplied text: the manifest schema accepts any
+ * string, so a pack can ship `ru_RU`, `not_a_locale`, or `xx`. Both failure
+ * modes are silent without this gate — `Intl` rejects a malformed tag, and for
+ * a well-formed but unknown one it falls back to the *host* locale, which would
+ * give the pack whichever plural rules the user's machine happens to have.
+ * Returning undefined instead leaves the lookup empty, so the resolver keeps
+ * running on the synthetic tag and the pack degrades to i18next's default.
+ */
+function canonicalPluralLocale(declared: string): string | undefined {
+  // POSIX-style tags are a common manifest slip; Intl only accepts dashes.
+  const candidate = declared.trim().replace(/_/g, '-')
+  let canonical: string | undefined
+  try {
+    canonical = Intl.getCanonicalLocales(candidate)[0]
+  } catch {
+    return undefined
+  }
+  if (!canonical) {
+    return undefined
+  }
+  return Intl.PluralRules.supportedLocalesOf(canonical).length > 0 ? canonical : undefined
+}
 
 function resolverOf(instance: I18nInstance): PluralResolverLike | undefined {
   const services = (instance as unknown as { services?: { pluralResolver?: PluralResolverLike } })
@@ -42,8 +62,12 @@ export function applyPluginPluralLocales(
 ): void {
   declaredLocales.clear()
   for (const pack of packs) {
-    if (pack.locale && pack.locale !== pack.resourceLanguage) {
-      declaredLocales.set(pack.resourceLanguage, pack.locale)
+    if (!pack.locale || pack.locale === pack.resourceLanguage) {
+      continue
+    }
+    const canonical = canonicalPluralLocale(pack.locale)
+    if (canonical) {
+      declaredLocales.set(pack.resourceLanguage, canonical)
     }
   }
 

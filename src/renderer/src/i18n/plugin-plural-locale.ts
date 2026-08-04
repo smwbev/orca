@@ -1,5 +1,6 @@
 import type { i18n as I18nInstance } from 'i18next'
 import type { PluginLanguagePackRegistration } from '../../../shared/plugins/plugin-language-pack-artifact'
+import { canonicalizePackLocale } from './pack-locale'
 
 /**
  * Plural rules for plugin language packs.
@@ -23,23 +24,16 @@ const declaredLocales = new Map<string, string>()
 let installedResolver: PluralResolverLike | undefined
 
 /**
- * The declared locale is author-supplied text: the manifest schema accepts any
- * string, so a pack can ship `ru_RU`, `not_a_locale`, or `xx`. Both failure
- * modes are silent without this gate — `Intl` rejects a malformed tag, and for
- * a well-formed but unknown one it falls back to the *host* locale, which would
- * give the pack whichever plural rules the user's machine happens to have.
- * Returning undefined instead leaves the lookup empty, so the resolver keeps
- * running on the synthetic tag and the pack degrades to i18next's default.
+ * Keep a declared locale only when `Intl.PluralRules` actually has data for it.
+ * A well-formed but unknown tag such as `xx` passes canonicalization, and the
+ * runtime then answers it with the *host* locale — the pack would select forms
+ * by whichever language the user's machine runs, which its author could never
+ * reproduce. Returning undefined leaves the lookup empty instead, so the
+ * resolver keeps running on the synthetic tag and the pack degrades to
+ * i18next's default.
  */
-function canonicalPluralLocale(declared: string): string | undefined {
-  // POSIX-style tags are a common manifest slip; Intl only accepts dashes.
-  const candidate = declared.trim().replace(/_/g, '-')
-  let canonical: string | undefined
-  try {
-    canonical = Intl.getCanonicalLocales(candidate)[0]
-  } catch {
-    return undefined
-  }
+function pluralLocaleOf(declared: string): string | undefined {
+  const canonical = canonicalizePackLocale(declared)
   if (!canonical) {
     return undefined
   }
@@ -65,7 +59,7 @@ export function applyPluginPluralLocales(
     if (!pack.locale || pack.locale === pack.resourceLanguage) {
       continue
     }
-    const canonical = canonicalPluralLocale(pack.locale)
+    const canonical = pluralLocaleOf(pack.locale)
     if (canonical) {
       declaredLocales.set(pack.resourceLanguage, canonical)
     }

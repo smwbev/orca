@@ -34,6 +34,13 @@ const PI_SESSIONS_DIR = normalizeAgentSessionsDir(
   process.env.PI_CODING_AGENT_DIR?.trim() || join(homedir(), '.pi', 'agent', 'sessions'),
   '.pi'
 )
+// Why: Prime Agent brands Pi's env contract — its config root is
+// PRIME_AGENT_CODING_AGENT_DIR, not the PI_CODING_AGENT_DIR Pi/OMP share.
+const PRIME_AGENT_SESSIONS_DIR = normalizeAgentSessionsDir(
+  process.env.PRIME_AGENT_CODING_AGENT_DIR?.trim() ||
+    join(homedir(), '.prime', 'agent', 'sessions'),
+  '.prime'
+)
 // Why: Devin ATIF transcripts are stored under <DEVIN_HOME>/transcripts.
 const DEVIN_TRANSCRIPTS_DIR = join(
   process.env.DEVIN_HOME?.trim() || join(homedir(), '.local', 'share', 'devin', 'cli'),
@@ -133,7 +140,8 @@ function standardDiscoveries(
     ...hermesDiscoveries(options, wslHomeDirs, limit, issues),
     ...rovoDiscoveries(options, wslHomeDirs, limit, issues),
     ...piDiscoveries(options, wslHomeDirs, limit, issues),
-    ...ompDiscoveries(options, wslHomeDirs, limit, issues)
+    ...ompDiscoveries(options, wslHomeDirs, limit, issues),
+    ...primeAgentDiscoveries(options, wslHomeDirs, limit, issues)
   ]
 }
 
@@ -282,6 +290,21 @@ function ompDiscoveries(
       directoryPredicate: (name, depth) =>
         depth === 0 || !OMP_SESSION_ARTIFACT_DIR_PATTERN.test(name)
     })
+  )
+}
+
+function primeAgentDiscoveries(
+  options: AiVaultScanOptions,
+  wslHomeDirs: readonly string[],
+  limit: number,
+  issues: AiVaultScanIssue[]
+): Promise<SessionFileDiscovery>[] {
+  return sessionRootDirs(options.primeAgentSessionsDir ?? PRIME_AGENT_SESSIONS_DIR, wslHomeDirs, [
+    '.prime',
+    'agent',
+    'sessions'
+  ]).map((rootDir) =>
+    discoverFiles({ rootDir, limit, agent: 'prime-agent', issues, extensions: ['.jsonl'] })
   )
 }
 

@@ -129,11 +129,11 @@ export function findOpenCodeStorageRoot(filePath: string): string | null {
   return dirname(sessionRoot)
 }
 
-// Pi and OMP (a Pi fork) both store transcripts under
+// Pi and its forks (OMP, Prime Agent) all store transcripts under
 // <home>/<agentHomeDirName>/agent/sessions; accept any prefix of that path.
 export function normalizeAgentSessionsDir(
   rawValue: string,
-  agentHomeDirName: '.pi' | '.omp'
+  agentHomeDirName: '.pi' | '.omp' | '.prime'
 ): string {
   const trimmed = rawValue.trim()
   if (!trimmed) {

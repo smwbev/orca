@@ -4,6 +4,7 @@ import {
   extractPreviewContentText,
   normalizeAgentSessionsDir,
   normalizeFullFirstUserPromptText,
+  normalizePrimeAgentSessionsDir,
   normalizePreviewText,
   normalizeTitleText
 } from './session-scanner-values'
@@ -85,6 +86,21 @@ describe('AI Vault session scanner text values', () => {
     )
     expect(normalizeAgentSessionsDir('/agents/.omp/agent/sessions', '.omp')).toBe(
       '/agents/.omp/agent/sessions'
+    )
+  })
+
+  // Prime Agent's env var is its agent dir verbatim (the CLI writes to
+  // `<agentDir>/sessions`), so custom non-special basenames map to their
+  // sessions child instead of being scanned as-is.
+  it('maps any Prime Agent root to its sessions child', () => {
+    expect(normalizePrimeAgentSessionsDir('/tmp/prime-agent')).toBe('/tmp/prime-agent/sessions')
+    expect(normalizePrimeAgentSessionsDir('/tmp/prime-agent///')).toBe('/tmp/prime-agent/sessions')
+    expect(normalizePrimeAgentSessionsDir('/agents/.prime')).toBe('/agents/.prime/sessions')
+    expect(normalizePrimeAgentSessionsDir('/agents/.prime/agent')).toBe(
+      '/agents/.prime/agent/sessions'
+    )
+    expect(normalizePrimeAgentSessionsDir('/agents/.prime/agent/sessions')).toBe(
+      '/agents/.prime/agent/sessions'
     )
   })
 })

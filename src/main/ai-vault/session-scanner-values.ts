@@ -129,11 +129,11 @@ export function findOpenCodeStorageRoot(filePath: string): string | null {
   return dirname(sessionRoot)
 }
 
-// Pi and its forks (OMP, Prime Agent) all store transcripts under
+// Pi and OMP (a Pi fork) both store transcripts under
 // <home>/<agentHomeDirName>/agent/sessions; accept any prefix of that path.
 export function normalizeAgentSessionsDir(
   rawValue: string,
-  agentHomeDirName: '.pi' | '.omp' | '.prime'
+  agentHomeDirName: '.pi' | '.omp'
 ): string {
   const trimmed = rawValue.trim()
   if (!trimmed) {
@@ -151,6 +151,19 @@ export function normalizeAgentSessionsDir(
     return join(normalized, 'agent', 'sessions')
   }
   return normalized
+}
+
+// Prime Agent uses PRIME_AGENT_CODING_AGENT_DIR verbatim as its agent config
+// dir (no `/agent` suffixing) and writes transcripts to `<agentDir>/sessions`,
+// so every configured root maps to its `sessions` child; only an explicit
+// `.../sessions` path is taken as-is.
+export function normalizePrimeAgentSessionsDir(rawValue: string): string {
+  const trimmed = rawValue.trim()
+  if (!trimmed) {
+    return join(homedir(), '.prime', 'agent', 'sessions')
+  }
+  const normalized = trimmed.replace(/[\\/]+$/, '')
+  return basename(normalized) === 'sessions' ? normalized : join(normalized, 'sessions')
 }
 
 export function clampPositiveInteger(value: number | undefined, fallback: number): number {

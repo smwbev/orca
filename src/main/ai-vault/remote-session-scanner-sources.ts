@@ -15,7 +15,7 @@ import { parseHermesSessionContent } from './session-scanner-hermes-parser'
 import { partitionSubagentTranscriptPaths } from './session-scanner-subagent-transcripts'
 import { partitionOmpSubagentTranscriptPaths } from './session-scanner-omp-subagent-transcripts'
 import type { FileWithMtime } from './session-scanner-types'
-import { normalizeAgentSessionsDir } from './session-scanner-values'
+import { normalizeAgentSessionsDir, normalizePrimeAgentSessionsDir } from './session-scanner-values'
 import { remoteCodexIndexTitles } from './remote-session-scanner-codex-index'
 import type {
   RemoteParserOptions,
@@ -304,5 +304,5 @@ function remoteOmpSessionsSegments(): string[] {
 }
 
 function remotePrimeAgentSessionsSegments(): string[] {
-  return normalizeAgentSessionsDir('/.prime/agent/sessions', '.prime').split('/').filter(Boolean)
+  return normalizePrimeAgentSessionsDir('/.prime/agent/sessions').split('/').filter(Boolean)
 }

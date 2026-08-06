@@ -163,6 +163,11 @@ export function normalizePrimeAgentSessionsDir(rawValue: string): string {
     return join(homedir(), '.prime', 'agent', 'sessions')
   }
   const normalized = trimmed.replace(/[\\/]+$/, '')
+  // Why: a filesystem-root value strips to '', which would join into a relative
+  // 'sessions' root and walk the process cwd.
+  if (!normalized) {
+    return join(homedir(), '.prime', 'agent', 'sessions')
+  }
   return basename(normalized) === 'sessions' ? normalized : join(normalized, 'sessions')
 }
 

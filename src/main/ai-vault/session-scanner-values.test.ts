@@ -1,3 +1,5 @@
+import { homedir } from 'node:os'
+import { join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import {
   extractFullFirstUserPromptText,
@@ -102,5 +104,12 @@ describe('AI Vault session scanner text values', () => {
     expect(normalizePrimeAgentSessionsDir('/agents/.prime/agent/sessions')).toBe(
       '/agents/.prime/agent/sessions'
     )
+  })
+
+  it('falls back to the default root instead of a relative one for filesystem-root values', () => {
+    const fallback = join(homedir(), '.prime', 'agent', 'sessions')
+    expect(normalizePrimeAgentSessionsDir('/')).toBe(fallback)
+    expect(normalizePrimeAgentSessionsDir('//')).toBe(fallback)
+    expect(normalizePrimeAgentSessionsDir('   ')).toBe(fallback)
   })
 })

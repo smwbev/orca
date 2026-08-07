@@ -1,3 +1,5 @@
+import { homedir } from 'node:os'
+import { join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import {
   extractFullFirstUserPromptText,
@@ -86,5 +88,17 @@ describe('AI Vault session scanner text values', () => {
     expect(normalizeAgentSessionsDir('/agents/.omp/agent/sessions', '.omp')).toBe(
       '/agents/.omp/agent/sessions'
     )
+  })
+
+  // Why: a non-absolute env value would resolve against the main-process cwd.
+  // 'C:\' strips to the drive-relative 'C:' and 'C:foo' already is one — both
+  // non-absolute on every platform, like '/', '.', or a bare relative path.
+  it('falls back to the default root for every non-absolute env value', () => {
+    for (const agentHomeDirName of ['.pi', '.omp'] as const) {
+      const fallback = join(homedir(), agentHomeDirName, 'agent', 'sessions')
+      for (const value of ['/', '//', '   ', '.', '..', 'rel/path', 'C:\\', 'C:/', 'C:foo']) {
+        expect(normalizeAgentSessionsDir(value, agentHomeDirName)).toBe(fallback)
+      }
+    }
   })
 })

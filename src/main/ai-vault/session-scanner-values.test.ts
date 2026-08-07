@@ -115,10 +115,13 @@ describe('AI Vault session scanner text values', () => {
     )
   })
 
-  // Why: any non-absolute root would resolve against the main-process cwd.
+  // Why: any non-absolute root would resolve against the main-process cwd. A
+  // Windows drive root strips to the drive-relative 'C:' — non-absolute on
+  // every platform — so it must land in the same fallback, not join into
+  // 'C:sessions'.
   it('falls back to the default root for every non-absolute agent dir', () => {
     const fallback = join(homedir(), '.prime', 'agent', 'sessions')
-    for (const value of ['/', '//', '   ', '', '.', '..', 'sessions', 'rel/path']) {
+    for (const value of ['/', '//', '   ', '', '.', '..', 'sessions', 'rel/path', 'C:\\', 'C:/']) {
       expect(normalizePrimeAgentSessionsDir(value)).toBe(fallback)
     }
   })

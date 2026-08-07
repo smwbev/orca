@@ -8,7 +8,7 @@ import { discoverFiles, discoverOpenClawFiles } from './session-scanner-discover
 import { droidDiscoveries, kimiDiscoveries } from './session-scanner-droid-kimi-sources'
 import { opencodeDiscoveries } from './session-scanner-opencode-sources'
 import type { AiVaultScanOptions, SessionFileDiscovery } from './session-scanner-types'
-import { normalizeAgentSessionsDir, normalizePrimeAgentSessionsDir } from './session-scanner-values'
+import { normalizeAgentSessionsDir, primeAgentSessionsDirFromEnv } from './session-scanner-values'
 import {
   claudeProjectsRootDirs,
   normalizedWslHomeDirs,
@@ -34,13 +34,10 @@ const PI_SESSIONS_DIR = normalizeAgentSessionsDir(
   process.env.PI_CODING_AGENT_DIR?.trim() || join(homedir(), '.pi', 'agent', 'sessions'),
   '.pi'
 )
-// Why: Prime Agent brands Pi's env contract — its config root is
-// PRIME_AGENT_CODING_AGENT_DIR, not the PI_CODING_AGENT_DIR Pi/OMP share, and
-// the CLI takes it verbatim, so any custom root keeps sessions in
-// `<root>/sessions` rather than the Pi/OMP `<home>/agent/sessions` shape.
-const PRIME_AGENT_SESSIONS_DIR = normalizePrimeAgentSessionsDir(
-  process.env.PRIME_AGENT_CODING_AGENT_DIR?.trim() || join(homedir(), '.prime', 'agent', 'sessions')
-)
+// Why: Prime Agent brands Pi's env contract with its own prefix and adds a
+// dedicated sessions-root override, so resolution differs from Pi/OMP in shape
+// as well as in variable name.
+const PRIME_AGENT_SESSIONS_DIR = primeAgentSessionsDirFromEnv()
 // Why: Devin ATIF transcripts are stored under <DEVIN_HOME>/transcripts.
 const DEVIN_TRANSCRIPTS_DIR = join(
   process.env.DEVIN_HOME?.trim() || join(homedir(), '.local', 'share', 'devin', 'cli'),

@@ -7,6 +7,7 @@ import {
   normalizeAgentSessionsDir,
   normalizeFullFirstUserPromptText,
   normalizePrimeAgentSessionsDir,
+  primeAgentSessionsDirFromEnv,
   normalizePreviewText,
   normalizeTitleText
 } from './session-scanner-values'
@@ -91,18 +92,26 @@ describe('AI Vault session scanner text values', () => {
     )
   })
 
-  // Prime Agent's env var is its agent dir verbatim (the CLI writes to
-  // `<agentDir>/sessions`), so custom non-special basenames map to their
-  // sessions child instead of being scanned as-is.
-  it('maps any Prime Agent root to its sessions child', () => {
+  // Prime Agent's env var is its agent dir verbatim and the CLI writes to
+  // `<agentDir>/sessions`, so every configured dir maps to that child.
+  it('maps any Prime Agent agent dir to its sessions child', () => {
     expect(normalizePrimeAgentSessionsDir('/tmp/prime-agent')).toBe('/tmp/prime-agent/sessions')
     expect(normalizePrimeAgentSessionsDir('/tmp/prime-agent///')).toBe('/tmp/prime-agent/sessions')
     expect(normalizePrimeAgentSessionsDir('/agents/.prime')).toBe('/agents/.prime/sessions')
     expect(normalizePrimeAgentSessionsDir('/agents/.prime/agent')).toBe(
       '/agents/.prime/agent/sessions'
     )
-    expect(normalizePrimeAgentSessionsDir('/agents/.prime/agent/sessions')).toBe(
-      '/agents/.prime/agent/sessions'
+  })
+
+  // Why: the CLI appends `sessions` unconditionally, so an agent dir that is itself
+  // named `sessions` nests one deeper rather than being taken as the transcripts root.
+  it('still appends sessions when the agent dir is itself named sessions', () => {
+    expect(normalizePrimeAgentSessionsDir('/data/sessions')).toBe('/data/sessions/sessions')
+  })
+
+  it('expands a leading tilde in the agent dir', () => {
+    expect(normalizePrimeAgentSessionsDir('~/work/prime')).toBe(
+      join(homedir(), 'work', 'prime', 'sessions')
     )
   })
 
@@ -111,5 +120,49 @@ describe('AI Vault session scanner text values', () => {
     expect(normalizePrimeAgentSessionsDir('/')).toBe(fallback)
     expect(normalizePrimeAgentSessionsDir('//')).toBe(fallback)
     expect(normalizePrimeAgentSessionsDir('   ')).toBe(fallback)
+  })
+
+  describe('primeAgentSessionsDirFromEnv', () => {
+    const defaultDir = join(homedir(), '.prime', 'agent', 'sessions')
+
+    it('defaults to the home agent dir when nothing is configured', () => {
+      expect(primeAgentSessionsDirFromEnv({})).toBe(defaultDir)
+    })
+
+    it('appends sessions to a configured agent dir', () => {
+      expect(primeAgentSessionsDirFromEnv({ PRIME_AGENT_CODING_AGENT_DIR: '/opt/prime' })).toBe(
+        '/opt/prime/sessions'
+      )
+    })
+
+    // Why: upstream reads the sessions-root overrides before the agent dir and uses
+    // them verbatim; ignoring them left the vault silently empty.
+    it('prefers the sessions-root overrides verbatim over the agent dir', () => {
+      expect(
+        primeAgentSessionsDirFromEnv({
+          PRIME_AGENT_CODING_AGENT_DIR: '/opt/prime',
+          PRIME_AGENT_SESSION_DIR: '/mnt/transcripts'
+        })
+      ).toBe('/mnt/transcripts')
+      expect(
+        primeAgentSessionsDirFromEnv({
+          PRIME_AGENT_CODING_AGENT_DIR: '/opt/prime',
+          PRIME_AGENT_CODING_AGENT_SESSION_DIR: '/mnt/legacy'
+        })
+      ).toBe('/mnt/legacy')
+      expect(
+        primeAgentSessionsDirFromEnv({
+          PRIME_AGENT_SESSION_DIR: '/mnt/wins',
+          PRIME_AGENT_CODING_AGENT_SESSION_DIR: '/mnt/legacy'
+        })
+      ).toBe('/mnt/wins')
+    })
+
+    it('expands a tilde and rejects a degenerate sessions-root override', () => {
+      expect(primeAgentSessionsDirFromEnv({ PRIME_AGENT_SESSION_DIR: '~/t' })).toBe(
+        join(homedir(), 't')
+      )
+      expect(primeAgentSessionsDirFromEnv({ PRIME_AGENT_SESSION_DIR: '/' })).toBe(defaultDir)
+    })
   })
 })

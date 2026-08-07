@@ -304,5 +304,5 @@ function remoteOmpSessionsSegments(): string[] {
 }
 
 function remotePrimeAgentSessionsSegments(): string[] {
-  return normalizePrimeAgentSessionsDir('/.prime/agent/sessions').split('/').filter(Boolean)
+  return normalizePrimeAgentSessionsDir('/.prime/agent').split('/').filter(Boolean)
 }

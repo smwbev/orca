@@ -276,6 +276,27 @@ describe('agent process recognition', () => {
     ).toEqual({ agent: 'prime-agent', processName: 'prime-agent' })
   })
 
+  it('does not recognize Prime Agent non-interactive --mode runs as interactive agents', () => {
+    for (const mode of ['json', 'rpc', 'acp', 'daemon']) {
+      expect(recognizeAgentProcessFromCommandLine(`prime-agent --mode ${mode}`)).toBeNull()
+    }
+    // Why: `text` is the interactive TUI mode Orca hosts.
+    expect(recognizeAgentProcessFromCommandLine('prime-agent --mode text')).toEqual({
+      agent: 'prime-agent',
+      processName: 'prime-agent'
+    })
+    // Why: the CLI only parses `--mode <value>` as separate tokens, so `--mode=json`
+    // is ignored by it and still starts the interactive mode.
+    expect(recognizeAgentProcessFromCommandLine('prime-agent --mode=json')).toEqual({
+      agent: 'prime-agent',
+      processName: 'prime-agent'
+    })
+    expect(recognizeAgentProcessFromCommandLine('prime-agent -- --mode rpc')).toEqual({
+      agent: 'prime-agent',
+      processName: 'prime-agent'
+    })
+  })
+
   it('recognizes only the agent subcommand of the generic Orca CLI', () => {
     expect(recognizeAgentProcessFromCommandLine('orca claude-teams')).toEqual({
       agent: 'claude-agent-teams',

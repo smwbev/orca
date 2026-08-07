@@ -1,5 +1,5 @@
 import { homedir } from 'node:os'
-import { basename, dirname, join } from 'node:path'
+import { basename, dirname, isAbsolute, join } from 'node:path'
 import { readFile } from 'node:fs/promises'
 import { asRecord } from './session-scanner-record-value'
 
@@ -159,22 +159,20 @@ function defaultPrimeAgentSessionsDir(): string {
 
 // Why: the CLI expands a leading `~` itself, so a value set outside a shell
 // (config file, plist, quoted assignment) still resolves against the home dir.
-function expandHomePrefix(value: string): string {
-  if (value === '~') {
-    return homedir()
-  }
-  return value.startsWith('~/') ? homedir() + value.slice(1) : value
+// Returns null for anything that is not an absolute root, since a relative value
+// ('', '.', '..', 'sessions') would resolve against the main-process cwd.
+function absoluteConfiguredDir(rawValue: string): string | null {
+  const expanded = rawValue === '~' ? homedir() : rawValue.replace(/^~(?=[\\/])/, homedir())
+  const normalized = expanded.replace(/[\\/]+$/, '')
+  return normalized && isAbsolute(normalized) ? normalized : null
 }
 
 // Prime Agent takes PRIME_AGENT_CODING_AGENT_DIR verbatim as its agent config dir
 // (no `/agent` suffixing) and always writes transcripts to `<agentDir>/sessions` —
 // unconditionally, so a root that is itself named `sessions` still nests one deeper.
 export function normalizePrimeAgentSessionsDir(rawAgentDir: string): string {
-  const trimmed = expandHomePrefix(rawAgentDir.trim())
-  // Why: a filesystem-root value strips to '', which would join into a relative
-  // 'sessions' root and walk the process cwd.
-  const normalized = trimmed.replace(/[\\/]+$/, '')
-  return normalized ? join(normalized, 'sessions') : defaultPrimeAgentSessionsDir()
+  const agentDir = absoluteConfiguredDir(rawAgentDir.trim())
+  return agentDir ? join(agentDir, 'sessions') : defaultPrimeAgentSessionsDir()
 }
 
 // PRIME_AGENT_SESSION_DIR (and its legacy PRIME_AGENT_CODING_AGENT_SESSION_DIR alias)
@@ -184,8 +182,7 @@ export function primeAgentSessionsDirFromEnv(env: NodeJS.ProcessEnv = process.en
   const sessionDir =
     env.PRIME_AGENT_SESSION_DIR?.trim() || env.PRIME_AGENT_CODING_AGENT_SESSION_DIR?.trim()
   if (sessionDir) {
-    const normalized = expandHomePrefix(sessionDir).replace(/[\\/]+$/, '')
-    return normalized || defaultPrimeAgentSessionsDir()
+    return absoluteConfiguredDir(sessionDir) ?? defaultPrimeAgentSessionsDir()
   }
   const agentDir = env.PRIME_AGENT_CODING_AGENT_DIR?.trim()
   return agentDir ? normalizePrimeAgentSessionsDir(agentDir) : defaultPrimeAgentSessionsDir()

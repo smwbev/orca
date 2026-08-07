@@ -15,7 +15,7 @@ import { parseHermesSessionContent } from './session-scanner-hermes-parser'
 import { partitionSubagentTranscriptPaths } from './session-scanner-subagent-transcripts'
 import { partitionOmpSubagentTranscriptPaths } from './session-scanner-omp-subagent-transcripts'
 import type { FileWithMtime } from './session-scanner-types'
-import { normalizeAgentSessionsDir, normalizePrimeAgentSessionsDir } from './session-scanner-values'
+import { normalizeAgentSessionsDir } from './session-scanner-values'
 import { remoteCodexIndexTitles } from './remote-session-scanner-codex-index'
 import type {
   RemoteParserOptions,
@@ -303,6 +303,9 @@ function remoteOmpSessionsSegments(): string[] {
   return normalizeAgentSessionsDir('/.omp/agent/sessions', '.omp').split('/').filter(Boolean)
 }
 
+// Why: remote roots are posix regardless of the client platform, so these stay literal
+// rather than round-tripping through a local-platform path join that would emit
+// backslashes on a Windows client and collapse into a single bogus segment.
 function remotePrimeAgentSessionsSegments(): string[] {
-  return normalizePrimeAgentSessionsDir('/.prime/agent').split('/').filter(Boolean)
+  return ['.prime', 'agent', 'sessions']
 }

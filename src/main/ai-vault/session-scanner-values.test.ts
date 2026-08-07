@@ -115,11 +115,12 @@ describe('AI Vault session scanner text values', () => {
     )
   })
 
-  it('falls back to the default root instead of a relative one for filesystem-root values', () => {
+  // Why: any non-absolute root would resolve against the main-process cwd.
+  it('falls back to the default root for every non-absolute agent dir', () => {
     const fallback = join(homedir(), '.prime', 'agent', 'sessions')
-    expect(normalizePrimeAgentSessionsDir('/')).toBe(fallback)
-    expect(normalizePrimeAgentSessionsDir('//')).toBe(fallback)
-    expect(normalizePrimeAgentSessionsDir('   ')).toBe(fallback)
+    for (const value of ['/', '//', '   ', '', '.', '..', 'sessions', 'rel/path']) {
+      expect(normalizePrimeAgentSessionsDir(value)).toBe(fallback)
+    }
   })
 
   describe('primeAgentSessionsDirFromEnv', () => {
@@ -158,11 +159,14 @@ describe('AI Vault session scanner text values', () => {
       ).toBe('/mnt/wins')
     })
 
-    it('expands a tilde and rejects a degenerate sessions-root override', () => {
+    it('expands a tilde and rejects a non-absolute sessions-root override', () => {
       expect(primeAgentSessionsDirFromEnv({ PRIME_AGENT_SESSION_DIR: '~/t' })).toBe(
         join(homedir(), 't')
       )
-      expect(primeAgentSessionsDirFromEnv({ PRIME_AGENT_SESSION_DIR: '/' })).toBe(defaultDir)
+      // Why: '.' would otherwise scan the main-process cwd outright.
+      for (const value of ['/', '.', '..', 'rel/path', '   ']) {
+        expect(primeAgentSessionsDirFromEnv({ PRIME_AGENT_SESSION_DIR: value })).toBe(defaultDir)
+      }
     })
   })
 })

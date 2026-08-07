@@ -115,13 +115,25 @@ describe('AI Vault session scanner text values', () => {
     )
   })
 
-  // Why: any non-absolute root would resolve against the main-process cwd. A
-  // Windows drive root strips to the drive-relative 'C:' — non-absolute on
-  // every platform — so it must land in the same fallback, not join into
-  // 'C:sessions'.
+  // Why: any non-absolute root would resolve against the main-process cwd. The
+  // drive-shaped values ('C:foo' is the form that resolves against a per-drive
+  // cwd on Windows) are non-absolute on posix too, so they assert the same
+  // fallback here; real win32 semantics cannot be pinned on a posix runner.
   it('falls back to the default root for every non-absolute agent dir', () => {
     const fallback = join(homedir(), '.prime', 'agent', 'sessions')
-    for (const value of ['/', '//', '   ', '', '.', '..', 'sessions', 'rel/path', 'C:\\', 'C:/']) {
+    for (const value of [
+      '/',
+      '//',
+      '   ',
+      '',
+      '.',
+      '..',
+      'sessions',
+      'rel/path',
+      'C:\\',
+      'C:/',
+      'C:foo'
+    ]) {
       expect(normalizePrimeAgentSessionsDir(value)).toBe(fallback)
     }
   })
@@ -167,7 +179,7 @@ describe('AI Vault session scanner text values', () => {
         join(homedir(), 't')
       )
       // Why: '.' would otherwise scan the main-process cwd outright.
-      for (const value of ['/', '.', '..', 'rel/path', '   ']) {
+      for (const value of ['/', '.', '..', 'rel/path', '   ', 'C:foo']) {
         expect(primeAgentSessionsDirFromEnv({ PRIME_AGENT_SESSION_DIR: value })).toBe(defaultDir)
       }
     })

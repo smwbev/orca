@@ -135,18 +135,14 @@ export function normalizeAgentSessionsDir(
   rawValue: string,
   agentHomeDirName: '.pi' | '.omp'
 ): string {
-  const trimmed = rawValue.trim()
-  const fallback = join(homedir(), agentHomeDirName, 'agent', 'sessions')
-  if (!trimmed) {
-    return fallback
-  }
-  const normalized = trimmed.replace(/[\\/]+$/, '')
+  const normalized = rawValue.trim().replace(/[\\/]+$/, '')
   // Why: a non-absolute value — '' from a filesystem root, the drive-relative
   // 'C:'/'C:foo' a Windows drive value strips to, or a bare relative path —
-  // would resolve against the main-process cwd (the hazard the OMP roots guard
-  // in session-scanner-roots.ts covers only downstream).
-  if (!normalized || !isAbsolute(normalized)) {
-    return fallback
+  // would resolve against the main-process cwd. Syntactic check only: an
+  // absolute value that resolve()s to a filesystem root ('/..') passes through
+  // unchanged, as it always has.
+  if (!isAbsolute(normalized)) {
+    return join(homedir(), agentHomeDirName, 'agent', 'sessions')
   }
   const leaf = basename(normalized)
   if (leaf === 'sessions') {

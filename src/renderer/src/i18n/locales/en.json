@@ -294,8 +294,14 @@
           "34a03a6565": "Keep {{value0}} up to date",
           "fa9299a66f": "Your new worktree is current, but local {{value0}} is {{value1}} {{value2}} behind. AI diffs may miss recent commits.",
           "14bc053a47": "Local {{value0}} was not refreshed",
+          "localBaseRefRefreshFailedForWorktree": "Local {{value0}} was not refreshed for \"{{value1}}\"",
           "4a18052018": "Local {{value0}} is behind {{value1}}",
-          "903b51c2ed": "Workspace created from {{value0}}, but Orca could not fast-forward local {{value1}} because {{value2}}",
+          "903b51c2ed": "Workspace created from {{value0}}, but Orca could not fast-forward local {{value1}}. {{value2}}",
+          "localBaseRefRefreshFailedDescriptionNamed": "Workspace \"{{value0}}\" was created from {{value1}}, but Orca could not fast-forward local {{value2}}. {{value3}}",
+          "localBaseRefRefreshFailedDetailDirtyNamed": "The worktree at {{value0}} (where local {{value1}} is checked out) has uncommitted changes. Commit, stash, or discard those changes, then update local {{value1}} manually.",
+          "localBaseRefRefreshFailedDetailDirty": "The worktree where local {{value0}} is checked out has uncommitted changes. Commit, stash, or discard those changes, then update local {{value0}} manually.",
+          "localBaseRefRefreshFailedDetailNotFastForward": "Local {{value0}} does not exist or cannot be fast-forwarded cleanly from the remote base. Check for local-only commits before updating it manually.",
+          "localBaseRefRefreshFailedDetailError": "Git returned an error while updating local {{value0}}. Check the repo for locked refs or unusual worktree state, then update local {{value0}} manually.",
           "0216895fb5": "Failed to delete branch",
           "c6cf133786": "This workspace is no longer available.",
           "19db0085fb": "Local branch deleted",
@@ -416,7 +422,8 @@
               "8d6eedf97e": "Failed to register the Orca CLI in PATH.",
               "0f116999f1": "Restart your shell or add the Orca CLI directory to PATH before setup.",
               "15cbedc3e3": "Install the Orca CLI before running agent skill setup.",
-              "windowsPathUnknown": "Orca could not check your Windows user PATH"
+              "windowsPathUnknown": "Orca could not check your Windows user PATH",
+              "refreshCliRegistration": "Refresh CLI registration status and try again."
             }
           }
         }
@@ -632,6 +639,9 @@
             "0b01ff98d2": "Port",
             "7d732521ec": "Comment"
           }
+        },
+        "activation": {
+          "cannotOpenFolderWorkspace": "Cannot open folder workspace"
         }
       },
       "folderWorkspacePathStatus": {
@@ -3263,7 +3273,12 @@
             "runtime_disconnect_failed": "Disconnect failed",
             "runtime_reconnecting": "Reconnecting",
             "runtime_last_close_reason": "Closed: {{value0}}",
-            "runtime_reconnect_attempt": "Attempt {{value0}}"
+            "runtime_reconnect_attempt": "Attempt {{value0}}",
+            "connectedHostCount_one": "{{count}} host",
+            "connectedHostCount_other": "{{count}} hosts",
+            "connecting": "Connecting…",
+            "workspaceConflict": "Workspace conflict",
+            "workspaceSyncError": "Workspace sync error"
           },
           "StatusBar": {
             "9659e38343": "Ports",
@@ -3323,7 +3338,8 @@
             "antigravityUsage": "Antigravity Usage",
             "antigravityUsageDetails": "Open Antigravity usage details",
             "grokUsageAria": "Open Grok usage details",
-            "grokUsageMenu": "Grok Usage"
+            "grokUsageMenu": "Grok Usage",
+            "floatingTerminalNewActivity": "{{label}}, new activity"
           },
           "StatusBarUsageEmptyCta": {
             "828c764a79": "Connect an account",
@@ -3548,6 +3564,21 @@
               "metric": {
                 "workingSetDescription": "Summed working set (WS). Shared pages can appear in more than one process.",
                 "rssDescription": "Summed resident set size (RSS). Shared or aliased pages can appear in more than one process."
+              }
+            },
+            "manager": {
+              "terminal": {
+                "copy": {
+                  "terminalSessionCount_one": "{{count}} terminal session",
+                  "terminalSessionCount_other": "{{count}} terminal sessions",
+                  "memoryUnavailable": "memory unavailable",
+                  "tooltipSummary": "Resource Manager - {{memory}} - {{sessions}}",
+                  "spaceScanReady": "Space scan ready",
+                  "sessionsGroupedByWorkspace": "Terminal sessions are grouped by workspace.",
+                  "noTerminalSessions": "No terminal sessions yet.",
+                  "ariaLabel": "Resource Manager, {{sessions}}",
+                  "ariaLabelWithSpaceScan": "Resource Manager, {{sessions}}, {{spaceScan}}"
+                }
               }
             }
           }
@@ -5793,7 +5824,8 @@
           "f00d6aa9b5": "WSL is not available on this machine.",
           "7c776ff9d8": "wsl",
           "fc0fcf72fd": "Register the WSL shell command before skill setup.",
-          "windowsPathUnknown": "WSL shell command PATH could not be checked"
+          "windowsPathUnknown": "WSL shell command PATH could not be checked",
+          "refreshCliRegistration": "Refresh CLI registration status and try again."
         },
         "CommitMessageAiPane": {
           "841ed9884a": "Used by repositories that have not customized Source Control AI.",
@@ -5875,8 +5907,8 @@
           "b2210b1b4f": "Bluetooth",
           "dfbc12c8c8": "Hardware debugging and device tools that talk to USB devices.",
           "bf51e4a542": "USB Devices",
-          "f903bf20b5": "Discovery and access for development servers on your network.",
-          "e7bb06007c": "LAN",
+          "f903bf20b5": "Allows terminals and development tools to connect to services on your local network. macOS does not report this permission's current status to Orca.",
+          "e7bb06007c": "Local Network",
           "4a73f5217a": "Apple Events for scripts that control other local apps.",
           "e119f0d66b": "Automation",
           "7ca17b62c8": "macOS names Orca when the agents it runs read other apps' data, because Orca is the responsible process for terminal commands. Grant this to Orca to reduce those prompts. Then quit and reopen Orca.",
@@ -5899,7 +5931,29 @@
           "statusRestricted": "Restricted",
           "statusUnsupported": "macOS only",
           "statusEntitled": "Entitled",
-          "statusCheckManually": "Check manually"
+          "statusCheckManually": "Check manually",
+          "actionRequestAccess": "Request Access",
+          "localNetworkPromptCheck": "Check for a macOS prompt",
+          "localNetworkPromptGuidance": "If prompted, choose Allow. If no prompt appears, open System Settings and enable Orca under Privacy & Security → Local Network.",
+          "localNetworkOpenSettings": "Open System Settings",
+          "openSettingsFailed": "Could not open System Settings",
+          "localNetworkOpenSystemSettings": "Open System Settings",
+          "statusManagedByMacOS": "Managed by macOS",
+          "connectionTestInvalidTarget": "Enter a hostname or private LAN IP and a port from 1 to 65535.",
+          "connectionTestTimeout": "Connection timed out. Check the target, service, and macOS Local Network settings.",
+          "connectionTestRefused": "The host responded, but the port refused the connection.",
+          "connectionTestUnreachable": "The target could not be reached.",
+          "connectionTestUnresolved": "The hostname could not be resolved.",
+          "connectionTestUnsupported": "Connection testing is available in the macOS desktop app.",
+          "connectionTestFailed": "The connection test could not be completed.",
+          "connectionTestTitle": "Test connection",
+          "connectionTestDescription": "Enter a service on another device on your local network. Orca tests the same network path used by terminal tools.",
+          "connectionTestLastVerified": "Last verified",
+          "connectionTestNotYetVerified": "No successful test saved.",
+          "connectionTestHost": "Host",
+          "connectionTestPort": "Port",
+          "connectionTestRunning": "Testing...",
+          "connectionTestAction": "Test Connection"
         },
         "ExperimentalPane": {
           "9762364929": "Uses APFS clone-copy on macOS when possible, otherwise symlinks configured folders or files into created worktrees.",
@@ -6185,6 +6239,11 @@
           "3d172725cc": "None",
           "1f32ba27a6": "Custom",
           "a182c5125e": "Git Username",
+          "sourceControlGroupOrderTitle": "Source Control Group Order",
+          "sourceControlGroupOrderDescription": "Choose whether Changes, Staged Changes, or Untracked Files appear first in Source Control.",
+          "changesFirst": "Changes first",
+          "stagedFirst": "Staged first",
+          "untrackedFirst": "Untracked first",
           "compareAgainstUpstreamTitle": "Default Compare Base",
           "compareAgainstUpstreamDescription": "Choose which base Source Control uses by default for committed-change comparisons. Branch upstream follows the current branch automatically and falls back to the repository default branch when no upstream exists. You can still change the compare base per worktree from that worktree's Git panel. Pull Request and rebase targets don't change.",
           "compareBaseRepositoryDefault": "Repository default",
@@ -8460,7 +8519,14 @@
             "f83c8937c4": "branch naming",
             "5ecd91c5ef": "Prefix added to branch names when creating worktrees.",
             "68bd65fdb8": "Branch Prefix",
+            "sourceControlGroupOrderTitle": "Source Control Group Order",
+            "sourceControlGroupOrderDescription": "Choose whether Changes, Staged Changes, or Untracked Files appear first in Source Control.",
+            "groupOrder": "group order",
+            "changesFirst": "changes first",
+            "stagedFirst": "staged first",
+            "untrackedFirst": "untracked first",
             "sourceControl": "source control",
+            "gitChanges": "git changes",
             "compareAgainstUpstreamTitle": "Default Compare Base",
             "compareAgainstUpstreamDescription": "Choose which base Source Control uses by default for committed-change comparisons. Branch upstream follows the current branch automatically and falls back to the repository default branch when no upstream exists. You can still change the compare base per worktree from that worktree's Git panel. Pull Request and rebase targets don't change.",
             "compareBase": "compare base",
@@ -10801,8 +10867,6 @@
             "a4e93c21d7": "Current branch: {{value0}}",
             "c7d4e2f801": "Change base ref: {{value0}}",
             "f3a1b8c204": "upstream",
-            "discardAllMixedUntracked": "Discard changes and delete untracked files",
-            "discardFolderMixedUntracked": "Discard changes and delete untracked files in folder",
             "createPrIntentEmptyGeneratedBody": "Generated review details did not include a description. Retry Create PR.",
             "createPrIntentGenerateDetailsFailed": "Could not generate review details. Retry Create PR."
           },
@@ -11228,10 +11292,7 @@
                   "40e9357b2a": "This will restore the file from HEAD and discard the deletion. This cannot be undone.",
                   "5c0bdbc4cb": "Restore \"{{value0}}\"?",
                   "d97bf697c9": "This will permanently delete this file. This cannot be undone.",
-                  "96c772bee9": "Delete \"{{value0}}\"?",
-                  "mixedTitle": "Discard changes and delete untracked files?",
-                  "mixedDescription": "Tracked changes will be reverted and untracked files will be permanently deleted. This cannot be undone.",
-                  "mixedConfirm": "Delete and discard"
+                  "96c772bee9": "Delete \"{{value0}}\"?"
                 },
                 "dialog": {
                   "3bc61dc989": "Cancel",
@@ -11305,9 +11366,18 @@
                 "line": {
                   "total": {
                     "chip": {
-                      "daa8e8e59b": "{{value0}} additions, {{value1}} deletions",
-                      "8a9b97b666": "{{value0}} additions",
-                      "52c366d88d": "{{value0}} deletions"
+                      "daa8e8e59b": "{{value0}} lines added, {{value1}} lines deleted",
+                      "8a9b97b666": "{{value0}} lines added",
+                      "52c366d88d": "{{value0}} lines deleted",
+                      "4c1f70ba92": "{{value0}} — test code: {{value1}} lines added, {{value2}} lines deleted",
+                      "6b2d0f14a7": "Tests",
+                      "9e4a3c5081": "Non-test",
+                      "3d7e9b1042": "Non-generated",
+                      "a1b2c3d4e5": "Code breakdown",
+                      "b2c3d4e5f6": "Lines of code",
+                      "7f3e1a9c24": "{{value0}} — generated: {{value1}} lines added, {{value2}} lines deleted",
+                      "c8d5b21e07": "Source",
+                      "7a04c6f8b3": "Generated"
                     }
                   }
                 }
@@ -11392,7 +11462,9 @@
             "openSupportedWorkspace": "Open a workspace before resuming a session.",
             "sessionHostMismatchUnsupported": "This session belongs to a different host. Open a workspace on the same host to resume it.",
             "localSessionSshWorkspaceUnsupported": "This session's history is stored on this machine, so it can't resume in an SSH workspace. Open a local workspace instead.",
-            "prepareSessionResumeFailed": "Could not prepare this session for resume."
+            "prepareSessionResumeFailed": "Could not prepare this session for resume.",
+            "sessionDeleted": "Session deleted",
+            "sessionDeleteFailed": "Couldn't delete the session"
           },
           "AiVaultPanelControls": {
             "scanningSessions": "Scanning sessions",
@@ -11524,7 +11596,17 @@
             "jumpToOriginalPane": "Jump to Original Pane",
             "jumpToWorktree": "Jump to Worktree",
             "subagentCountSingular": "1 subagent",
-            "subagentCountPlural": "{{value0}} subagents"
+            "subagentCountPlural": "{{value0}} subagents",
+            "delete": "Delete",
+            "deleteReasonNonLocalHost": "Only sessions on this device can be deleted.",
+            "deleteReasonSyntheticPath": "This session can't be deleted from Orca.",
+            "deleteReasonUnsupportedAgent": "{{value0}} sessions can't be deleted from Orca.",
+            "deleteReasonSessionLive": "This session is still running — wait for it to finish before deleting."
+          },
+          "AiVaultSessionDeleteDialog": {
+            "title": "Delete this session?",
+            "description": "\"{{value0}}\" will be deleted. Once deleted, it will no longer be resumable from {{value1}}'s own command line either.",
+            "confirm": "Delete"
           },
           "FileExplorerNameFilter": {
             "26fb73c6e3": "Find files",
@@ -12162,6 +12244,7 @@
           "confirmationError": "This address could not produce a scannable pairing code. Check the address and try again."
         },
         "NetworkInterfacePicker": {
+          "no-address-selected": "No address selected",
           "trigger-label": "Network address to advertise",
           "custom-option": "{{address}} (custom)",
           "add-custom": "Add custom address…",

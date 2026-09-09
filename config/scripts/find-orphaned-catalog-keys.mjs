@@ -27,6 +27,10 @@ const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mts', '.cts']
 // A catalog key never looks like a word; require a dot and a reasonable length so
 // the literal scan does not drown in ordinary strings.
 const KEY_SHAPED = /^[A-Za-z][A-Za-z0-9._-]*\.[A-Za-z0-9._-]+$/
+// i18next appends a CLDR category to the base key and resolves it at runtime, so
+// `…count_one` never appears in a source file even though `…count` does. Judge
+// the base key instead, or the prune eats every plural variant in the catalog.
+const PLURAL_SUFFIX = /_(zero|one|two|few|many|other)$/
 
 function flattenCatalog(value, prefix = '', entries = new Map()) {
   if (typeof value === 'string') {
@@ -104,7 +108,14 @@ export async function findOrphanedKeys(root = process.cwd()) {
   const english = flattenCatalog(JSON.parse(await fs.readFile(path.join(root, EN_CATALOG), 'utf8')))
   const referenced = await extractReferencedKeys(root)
   const literals = await collectLiteralStrings(await collectSourceFiles(root))
-  const orphans = [...english.keys()].filter((key) => !referenced.has(key) && !literals.has(key))
+  const isReferenced = (key) => {
+    if (referenced.has(key) || literals.has(key)) {
+      return true
+    }
+    const base = key.replace(PLURAL_SUFFIX, '')
+    return base !== key && (referenced.has(base) || literals.has(base) || english.has(base))
+  }
+  const orphans = [...english.keys()].filter((key) => !isReferenced(key))
   return { total: english.size, referenced: referenced.size, orphans }
 }
 

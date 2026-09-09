@@ -638,8 +638,7 @@
           "capture": {
             "notification": {
               "b0536028c9": "Ouvrir les raccourcis",
-              "141ad6c004": "Raccourci terminal traité",
-              "0ab0cd001a": "size-4 text-muted-foreground"
+              "141ad6c004": "Raccourci terminal traité"
             }
           }
         }
@@ -2224,7 +2223,6 @@
         "IssueSourceSelector": {
           "d6aeb2012b": "Affichage des issues de",
           "787c970baf": "Source des issues",
-          "643d7e9496": "upstream",
           "51d1608920": "Origine",
           "30b2c9df91": "Upstream"
         },
@@ -5733,9 +5731,6 @@
           "a4fa380b67": "{assistantMessage}",
           "2ee2779c05": "{firstPrompt}"
         },
-        "AutoRenameBranchPromptEditor": {
-          "ebb942a2ec": "fix-login-flow"
-        },
         "BaseRefPicker": {
           "1b8e54151f": "Aucune branche correspondante.",
           "d166ff883d": "Actuel",
@@ -6290,8 +6285,6 @@
           "ad31c3c5fb": "Collage de la sélection au clic milieu"
         },
         "IntegrationsPane": {
-          "e74de656ce": "glab auth login",
-          "51000487c4": "gh auth login",
           "3ba07f933b": "Connectez les trackers d'issues qu'Orca peut utiliser pour parcourir les tâches et démarrer des espaces de travail avec le contexte associé.",
           "70e885705b": "Fournisseurs de tâches",
           "1683acbac4": "Connectez les hébergeurs de code qu'Orca peut utiliser pour les pull requests, merge requests, checks et statuts de revue.",
@@ -6663,12 +6656,9 @@
           "07ba35bc68": "Vérifiez l'indentation sous `scripts:`. Les clés de hook doivent être indentées de deux espaces, et les lignes de commande de quatre.",
           "787ca433ef": "Définissez uniquement les clés prises en charge : `scripts`, `setup`, `archive` et `issueCommand`.",
           "ecc73d9125": "Comparez votre fichier au modèle fonctionnel ci-dessous et recopiez cette structure si besoin.",
-          "925f9e0dc4": "text-foreground",
           "0cc712b823": "Le fichier de configuration principal existe à la racine du dépôt, mais Orca n'a pas encore pu analyser les définitions de hooks prises en charge.",
-          "c90b858573": "text-amber-700 dark:text-amber-300",
           "aba825233f": "Le fichier contient des clés de configuration que cette version d'Orca ne reconnaît pas. Vous devrez peut-être mettre à jour Orca, ou vérifier le fichier pour écarter une faute de frappe.",
           "ca424ff135": "Les hooks partagés et les valeurs par défaut d'automatisation d'issues sont définis dans le dépôt et accessibles à tous ceux qui l'utilisent.",
-          "32f417fe17": "text-emerald-700 dark:text-emerald-300",
           "8bfe65fc60": "Utiliser les commandes locales",
           "8d6c56bff8": "Exécuter les deux",
           "0fa21e19ec": "Nom de l'espace de travail, généralement basé sur le nom de branche.",
@@ -11068,7 +11058,6 @@
             "0314901467": "Contrôle de code source",
             "8bc2bbc3a0": "Explorateur",
             "9fffaf17c1": "Basculer la barre latérale droite ({{value0}})",
-            "6306b48afd": "source-control",
             "aiVaultSessionHistory": "Agents",
             "folderWorkspaces": "Worktrees attachés",
             "parentPrChecks": "Vérifications de la PR"
@@ -12470,9 +12459,6 @@
               }
             }
           },
-          "ReviewAnimatedVisual": {
-            "8df4d52b68": "pr-view"
-          },
           "FeatureWallBrowserAction": {
             "5022c43a88": "Impossible d'ouvrir le navigateur",
             "c9eb68b474": "Aucun groupe d'espaces de travail n'est encore disponible pour ce worktree.",
@@ -12733,7 +12719,6 @@
           "19c45cfdc0": "Tout développer",
           "982d14bfa5": "Ouvrir toutes les modifications",
           "3d909843bb": "Ouvrir le diff de branche",
-          "8368d256ec": "combined-branch",
           "8f68ad9ca9": "Afficher {{value0}} IA {{value1}}",
           "724a13568d": " dans {{value0}}",
           "6094135eec": " vs {{value0}}",

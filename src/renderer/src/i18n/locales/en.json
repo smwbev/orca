@@ -756,8 +756,7 @@
           "capture": {
             "notification": {
               "b0536028c9": "Open Shortcuts",
-              "141ad6c004": "Terminal shortcut handled",
-              "0ab0cd001a": "size-4 text-muted-foreground"
+              "141ad6c004": "Terminal shortcut handled"
             }
           }
         }
@@ -2416,7 +2415,6 @@
         "IssueSourceSelector": {
           "d6aeb2012b": "Showing issues from",
           "787c970baf": "Issue source",
-          "643d7e9496": "upstream",
           "51d1608920": "Origin",
           "30b2c9df91": "Upstream"
         },
@@ -6005,9 +6003,6 @@
           "a4fa380b67": "{assistantMessage}",
           "2ee2779c05": "{firstPrompt}"
         },
-        "AutoRenameBranchPromptEditor": {
-          "ebb942a2ec": "fix-login-flow"
-        },
         "BaseRefPicker": {
           "1b8e54151f": "No matching branches found.",
           "d166ff883d": "Current",
@@ -6576,8 +6571,6 @@
           "ad31c3c5fb": "Middle-click Paste from Selection"
         },
         "IntegrationsPane": {
-          "e74de656ce": "glab auth login",
-          "51000487c4": "gh auth login",
           "3ba07f933b": "Connect issue trackers Orca can use to browse tasks and start workspaces with linked context.",
           "70e885705b": "Task providers",
           "1683acbac4": "Connect the source hosts Orca can use for pull requests, merge requests, checks, and review status.",
@@ -6951,12 +6944,9 @@
           "07ba35bc68": "Check the indentation under `scripts:`. Hook keys should use two spaces, and command lines should use four.",
           "787ca433ef": "Define only the supported keys: `scripts`, `setup`, `archive`, and `issueCommand`.",
           "ecc73d9125": "Compare your file against the working template below and copy that shape if needed.",
-          "925f9e0dc4": "text-foreground",
           "0cc712b823": "The core configuration file exists in the repo root, but Orca could not parse the supported hook definitions yet.",
-          "c90b858573": "text-amber-700 dark:text-amber-300",
           "aba825233f": "The file contains configuration keys that this version of Orca does not recognize. You may need to update Orca, or check the file for typos.",
           "ca424ff135": "Shared hook and issue-automation defaults are defined in the repo and available to everyone who uses it.",
-          "32f417fe17": "text-emerald-700 dark:text-emerald-300",
           "8bfe65fc60": "Use local commands",
           "8d6c56bff8": "Run both",
           "0fa21e19ec": "Name of the workspace, usually based on the branch name.",
@@ -11574,7 +11564,6 @@
             "0314901467": "Source Control",
             "8bc2bbc3a0": "Explorer",
             "9fffaf17c1": "Toggle right sidebar ({{value0}})",
-            "6306b48afd": "source-control",
             "aiVaultSessionHistory": "Agents",
             "folderWorkspaces": "Attached worktrees",
             "parentPrChecks": "PR Checks"
@@ -13006,9 +12995,6 @@
               }
             }
           },
-          "ReviewAnimatedVisual": {
-            "8df4d52b68": "pr-view"
-          },
           "FeatureWallBrowserAction": {
             "5022c43a88": "Browser could not open",
             "c9eb68b474": "No workspace group is available for this worktree yet.",
@@ -13272,7 +13258,6 @@
           "19c45cfdc0": "Expand All",
           "982d14bfa5": "Open All Changes",
           "3d909843bb": "Open Branch Diff",
-          "8368d256ec": "combined-branch",
           "8f68ad9ca9": "Show {{value0}} AI {{value1}}",
           "724a13568d": " in {{value0}}",
           "6094135eec": " vs {{value0}}",

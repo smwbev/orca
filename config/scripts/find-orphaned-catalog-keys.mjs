@@ -24,6 +24,11 @@ const EN_CATALOG = path.join(LOCALES_DIR, 'en.json')
 // Every root that can reference a catalog key at runtime.
 const SOURCE_GLOBS = ['src', 'mobile']
 const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mts', '.cts'])
+// Mirror the ignore list in config/i18next.config.ts. A key named only by a test
+// is dead for the product, and counting it as live would let an obsolete
+// assertion pin a key no screen renders.
+const NON_RUNTIME_DIR = new Set(['node_modules', 'locales', '__tests__', '__snapshots__', 'assets'])
+const NON_RUNTIME_FILE = /\.(test|spec)\./
 // A catalog key never looks like a word; require a dot and a reasonable length so
 // the literal scan does not drown in ordinary strings.
 const KEY_SHAPED = /^[A-Za-z][A-Za-z0-9._-]*\.[A-Za-z0-9._-]+$/
@@ -58,11 +63,14 @@ async function collectSourceFiles(root) {
     for (const entry of entries) {
       const full = path.join(dir, entry.name)
       if (entry.isDirectory()) {
-        if (entry.name === 'node_modules' || entry.name === 'locales') {
+        if (NON_RUNTIME_DIR.has(entry.name)) {
           continue
         }
         await walk(full)
-      } else if (SOURCE_EXTENSIONS.has(path.extname(entry.name))) {
+      } else if (
+        SOURCE_EXTENSIONS.has(path.extname(entry.name)) &&
+        !NON_RUNTIME_FILE.test(entry.name)
+      ) {
         files.push(full)
       }
     }
@@ -120,12 +128,22 @@ export async function findOrphanedKeys(root = process.cwd()) {
 }
 
 async function main(root = process.cwd()) {
+  // Why --check: without a gate the prune regrows. verify:localization-extraction
+  // already computes the unreferenced set but only fails on keys missing from
+  // English, so a reverted feature strands its keys and nothing notices.
+  const check = process.argv.includes('--check')
   const { total, referenced, orphans } = await findOrphanedKeys(root)
   console.log(
     `${total} keys in en.json; ${referenced} referenced by extraction; ${orphans.length} unreferenced by extraction and absent from every source literal.`
   )
   for (const key of orphans) {
     console.log(key)
+  }
+  if (check && orphans.length > 0) {
+    console.error(
+      `\n${orphans.length} catalog ${orphans.length === 1 ? 'key is' : 'keys are'} unreachable. Delete them from every locale, then regenerate with \`pnpm run sync:localization-runtime-catalog\`. Removing a base key can strand its plural variants, so re-run until this reports none.`
+    )
+    process.exitCode = 1
   }
   return orphans.length
 }

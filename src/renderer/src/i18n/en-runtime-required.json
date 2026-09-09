@@ -62,7 +62,6 @@
       },
       "editor": {
         "CombinedDiffViewer": {
-          "8368d256ec": "combined-branch",
           "skippedConflictsExcluded_one": "{{count}} unresolved conflict was excluded from this diff view.",
           "skippedConflictsExcluded_other": "{{count}} unresolved conflicts were excluded from this diff view."
         },
@@ -99,9 +98,6 @@
       },
       "feature": {
         "wall": {
-          "ReviewAnimatedVisual": {
-            "8df4d52b68": "pr-view"
-          },
           "review": {
             "animated": {
               "visual": {
@@ -116,9 +112,6 @@
         }
       },
       "github": {
-        "IssueSourceSelector": {
-          "643d7e9496": "upstream"
-        },
         "project": {
           "ProjectPicker": {
             "b787682111": "Browse all",
@@ -242,9 +235,6 @@
               }
             }
           },
-          "index": {
-            "6306b48afd": "source-control"
-          },
           "pull": {
             "policy": {
               "notice": {
@@ -266,9 +256,6 @@
         "AutoRenameBranchFromWorkSetting": {
           "ef787db0e3": "Auto-Rename Branch"
         },
-        "AutoRenameBranchPromptEditor": {
-          "ebb942a2ec": "fix-login-flow"
-        },
         "ComputerUsePane": {
           "07bbe4c4cb": "Screenshots",
           "0c9a33f468": "Capture app windows so agents can inspect visual state.",
@@ -285,10 +272,6 @@
         },
         "GeneralWorkspaceSettingsSection": {
           "externalWorktreesDescription": "Choose whether worktrees created outside Orca appear by default."
-        },
-        "IntegrationsPane": {
-          "51000487c4": "gh auth login",
-          "e74de656ce": "glab auth login"
         },
         "OrchestrationSkillAgentCoverage": {
           "fullCoverage_one": "All 1 detected agent has the skill.",
@@ -307,11 +290,6 @@
         },
         "RemoteServerUpdateDialog": {
           "restartWarning": "Updating restarts these servers. {{value0}} live tabs and {{value1}} terminal panes may briefly disconnect."
-        },
-        "RepositoryHooksSection": {
-          "32f417fe17": "text-emerald-700 dark:text-emerald-300",
-          "925f9e0dc4": "text-foreground",
-          "c90b858573": "text-amber-700 dark:text-amber-300"
         },
         "RepositoryIconPicker": {
           "2b7d27b93c": "Use {{value0}} repo color"
@@ -562,17 +540,6 @@
               "handler": {
                 "29c031b49a": "Uploading {{value0}} file{{value1}} to runtime…"
               }
-            }
-          }
-        }
-      }
-    },
-    "lib": {
-      "terminal": {
-        "shortcut": {
-          "capture": {
-            "notification": {
-              "0ab0cd001a": "size-4 text-muted-foreground"
             }
           }
         }

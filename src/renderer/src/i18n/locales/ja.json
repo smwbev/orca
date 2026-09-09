@@ -535,8 +535,7 @@
           "capture": {
             "notification": {
               "b0536028c9": "ショートカットを開く",
-              "141ad6c004": "ターミナルショートカットの処理",
-              "0ab0cd001a": "size-4 text-muted-foreground"
+              "141ad6c004": "ターミナルショートカットの処理"
             }
           }
         }
@@ -2063,7 +2062,6 @@
         "IssueSourceSelector": {
           "d6aeb2012b": "からの Issue を表示しています",
           "787c970baf": "Issue ソース",
-          "643d7e9496": "upstream",
           "51d1608920": "オリジン",
           "30b2c9df91": "upstream"
         },
@@ -5115,9 +5113,6 @@
           "a4fa380b67": "{assistantMessage}",
           "2ee2779c05": "{firstPrompt}"
         },
-        "AutoRenameBranchPromptEditor": {
-          "ebb942a2ec": "fix-login-flow"
-        },
         "BaseRefPicker": {
           "1b8e54151f": "一致するブランチが見つかりませんでした。",
           "d166ff883d": "現在",
@@ -5638,8 +5633,6 @@
           "ad31c3c5fb": "中クリックして「選択範囲から貼り付け」"
         },
         "IntegrationsPane": {
-          "e74de656ce": "glab auth login",
-          "51000487c4": "gh auth login",
           "3ba07f933b": "Orca がタスクの閲覧や、コンテキストを引き継いだワークスペースの作成に使える Issue トラッカーを接続します。",
           "70e885705b": "タスクプロバイダー",
           "1683acbac4": "Orca が PR、MR、チェック、レビュー状況に使えるソースホストを接続します。",
@@ -5989,12 +5982,9 @@
           "07ba35bc68": "`scripts:` の下のインデントを確認してください。フックキーは2スペース、コマンド行は4スペースにします。",
           "787ca433ef": "サポートされているキーのみを定義してください: `scripts`、`setup`、`archive`、`issueCommand`。",
           "ecc73d9125": "下の動作するテンプレートと比較し、必要に応じてその形式をコピーしてください。",
-          "925f9e0dc4": "text-foreground",
           "0cc712b823": "コア構成ファイルはリポジトリルートに存在しますが、Orca はサポートされているフック定義をまだ解析できませんでした。",
-          "c90b858573": "text-amber-700 dark:text-amber-300",
           "aba825233f": "このファイルには、このバージョンの Orca が認識しない構成キーが含まれています。 Orca を更新するか、ファイルにタイプミスがないか確認する必要がある場合があります。",
           "ca424ff135": "共有フックと Issue 自動化のデフォルトはリポジトリで定義され、それを使用するすべてのユーザーが利用できます。",
-          "32f417fe17": "text-emerald-700 dark:text-emerald-300",
           "8bfe65fc60": "ローカルコマンドを使用する",
           "8d6c56bff8": "両方を実行します",
           "0fa21e19ec": "ワークスペースの名前。通常はブランチ名に基づきます。",
@@ -10134,7 +10124,6 @@
             "0314901467": "ソース管理",
             "8bc2bbc3a0": "エクスプローラ",
             "9fffaf17c1": "右サイドバーを切り替えます ({{value0}})",
-            "6306b48afd": "source-control",
             "aiVaultSessionHistory": "Agent",
             "folderWorkspaces": "添付ワークツリー",
             "parentPrChecks": "PR チェック"
@@ -11359,9 +11348,6 @@
               }
             }
           },
-          "ReviewAnimatedVisual": {
-            "8df4d52b68": "pr-view"
-          },
           "FeatureWallBrowserAction": {
             "5022c43a88": "ブラウザを開けませんでした",
             "c9eb68b474": "このワークツリーで利用できるワークスペースグループがまだありません。",
@@ -11625,7 +11611,6 @@
           "19c45cfdc0": "すべて展開",
           "982d14bfa5": "commit されていない差分を開く",
           "3d909843bb": "ブランチの差分を開く",
-          "8368d256ec": "combined-branch",
           "8f68ad9ca9": "{{value0}} AI {{value1}} を表示",
           "724a13568d": "（{{value0}}）",
           "6094135eec": " vs {{value0}}",

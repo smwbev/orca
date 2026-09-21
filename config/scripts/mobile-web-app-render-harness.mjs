@@ -44,6 +44,37 @@ export async function readShellCsp() {
 }
 
 /**
+ * The other headers the shell puts on the document, read from the Kotlin source for the same reason
+ * the policy is. String literals only, so the policy itself -- assigned from a constant -- stays
+ * `readShellCsp`'s job and is not reported twice.
+ *
+ * Throws on an empty result rather than returning one: a rig that served no header would otherwise
+ * measure the browser's own default and call it the shell's guarantee.
+ */
+export async function readShellDocumentHeaders() {
+  const source = await readFile(
+    join(
+      projectDir,
+      'mobile/modules/orca-mobile-web-shell/android/src/main/java/expo/modules/orcamobilewebshell/MobileWebShellResponseHeaders.kt'
+    ),
+    'utf8'
+  )
+  const start = source.indexOf('if (path == "/")')
+  const end = source.indexOf('return headers', start)
+  if (start === -1 || end < start) {
+    throw new Error('could not find the shell document-header branch')
+  }
+  const headers = {}
+  for (const match of source.slice(start, end).matchAll(/headers\["([^"]+)"\] = "([^"]+)"/g)) {
+    headers[match[1]] = match[2]
+  }
+  if (Object.keys(headers).length === 0) {
+    throw new Error('could not parse the shell document headers')
+  }
+  return headers
+}
+
+/**
  * The envelope version the page speaks, read from the contract rather than written down twice. A
  * bumped `v` would otherwise reach a test as a 30s timeout naming nothing.
  */
@@ -170,6 +201,7 @@ export function installShellDouble({
   faultGrant,
   grants,
   pageRoutes = null,
+  pageRouteGrants = null,
   replies,
   streams = [],
   windowCaps = null
@@ -224,6 +256,9 @@ export function installShellDouble({
             native: grants ?? [faultGrant]
           },
           ...(pageRoutes === null ? {} : { pageRoutes }),
+          // Omitted when the caller names none, which is the older-shell case the page falls back
+          // on: an absent field is not an empty one, and the page reads the difference.
+          ...(pageRouteGrants === null ? {} : { pageRouteGrants }),
           // Omitted for a shell too old to name one, which is the case the page has a panel for.
           ...(route === null ? {} : { route }),
           ...(host === null ? {} : { host }),
@@ -344,10 +379,23 @@ export function installShellDouble({
  * The page server the render checks run against: the built bundle, under the shell's own policy.
  *
  * `transformChunk` is how a check poisons one route chunk without building a second bundle.
+ * `cspHeader` may be a function of the request, and `handleRequest` lets a check answer a path of
+ * its own on this origin.
  */
-export async function createBundleServer({ outDir, cspHeader, transformChunk }) {
+export async function createBundleServer({
+  outDir,
+  cspHeader,
+  documentHeaders,
+  transformChunk,
+  handleRequest
+}) {
   const server = createServer((request, response) => {
     const path = new URL(request.url, 'http://localhost').pathname
+    // An endpoint of the check's own, answered before anything is looked for on disk: a policy's
+    // `report-uri` has to name a real server, and naming this one keeps it on the page's origin.
+    if (handleRequest?.(request, response, path)) {
+      return
+    }
     // A browser asks for this on its own and the shell's WebView never does. The bundle carries
     // no icon, so a 404 would put a console error in every check that runs against a full Chrome
     // -- which is what CI resolves -- and none against the bundled headless shell.
@@ -370,7 +418,15 @@ export async function createBundleServer({ outDir, cspHeader, transformChunk }) 
         // The document carries the shell's real policy, so a directive the page violates fails
         // here rather than on a phone. Assets carry none, exactly as the native handler does.
         if (file === 'index.html' && cspHeader) {
-          headers['content-security-policy'] = cspHeader
+          // A function when the policy is per-document: the preview rig appends this document's own
+          // report endpoint, which carries the arm's nonce.
+          headers['content-security-policy'] =
+            typeof cspHeader === 'function' ? cspHeader(request) : cspHeader
+        }
+        // Whatever else the shell puts on the document, on the document only, exactly as the native
+        // handler does.
+        if (file === 'index.html' && documentHeaders) {
+          Object.assign(headers, documentHeaders)
         }
         response.writeHead(200, headers)
         response.end(bytes)

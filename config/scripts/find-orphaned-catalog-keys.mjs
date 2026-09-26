@@ -82,16 +82,23 @@ async function collectSourceFiles(root) {
 }
 
 /** Every key-shaped string literal that appears anywhere in the sources. */
+// Exported for the unit tests: the scan is what makes a key referenced when
+// extraction cannot see it — a key held in a data structure or passed as a
+// variable — so its shape filter deserves cases of its own.
+export function collectLiteralKeys(text, found = new Set()) {
+  const literal = /['"`]([A-Za-z][A-Za-z0-9._-]{6,})['"`]/g
+  for (const match of text.matchAll(literal)) {
+    if (KEY_SHAPED.test(match[1])) {
+      found.add(match[1])
+    }
+  }
+  return found
+}
+
 async function collectLiteralStrings(files) {
   const found = new Set()
-  const literal = /['"`]([A-Za-z][A-Za-z0-9._-]{6,})['"`]/g
   for (const file of files) {
-    const text = await fs.readFile(file, 'utf8')
-    for (const match of text.matchAll(literal)) {
-      if (KEY_SHAPED.test(match[1])) {
-        found.add(match[1])
-      }
-    }
+    collectLiteralKeys(await fs.readFile(file, 'utf8'), found)
   }
   return found
 }
@@ -112,18 +119,23 @@ async function extractReferencedKeys(root) {
   }
 }
 
+// Exported for the unit tests: the plural rule is the one place where a key
+// absent from every source is still live, so it has to stay provable on its own.
+export function isKeyReferenced(key, { referenced, literals, english }) {
+  if (referenced.has(key) || literals.has(key)) {
+    return true
+  }
+  const base = key.replace(PLURAL_SUFFIX, '')
+  return base !== key && (referenced.has(base) || literals.has(base) || english.has(base))
+}
+
 export async function findOrphanedKeys(root = process.cwd()) {
   const english = flattenCatalog(JSON.parse(await fs.readFile(path.join(root, EN_CATALOG), 'utf8')))
   const referenced = await extractReferencedKeys(root)
   const literals = await collectLiteralStrings(await collectSourceFiles(root))
-  const isReferenced = (key) => {
-    if (referenced.has(key) || literals.has(key)) {
-      return true
-    }
-    const base = key.replace(PLURAL_SUFFIX, '')
-    return base !== key && (referenced.has(base) || literals.has(base) || english.has(base))
-  }
-  const orphans = [...english.keys()].filter((key) => !isReferenced(key))
+  const orphans = [...english.keys()].filter(
+    (key) => !isKeyReferenced(key, { referenced, literals, english })
+  )
   return { total: english.size, referenced: referenced.size, orphans }
 }
 

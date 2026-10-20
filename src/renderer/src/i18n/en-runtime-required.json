@@ -102,6 +102,16 @@
           "d01f55be57": "Shell",
           "e72e6b03f4": "Rust",
           "edfcc64182": "Go"
+        },
+        "editor": {
+          "save": {
+            "sectionStale": {
+              "notice": "This file changed on disk since this section loaded."
+            },
+            "stale": {
+              "notice": "This file changed on disk since your edits. Use the banner to compare, reload, or overwrite."
+            }
+          }
         }
       },
       "github": {
@@ -249,9 +259,6 @@
         }
       },
       "settings": {
-        "AccountsPane": {
-          "b43e761fe5": "MiniMax cookie update failed."
-        },
         "AutoRenameBranchFromWorkSetting": {
           "ef787db0e3": "Auto-Rename Branch"
         },
@@ -313,8 +320,6 @@
           "e1578cd4bc": "Workflows"
         },
         "SshPane": {
-          "94c5284560": "Targets",
-          "a7d28dff81": "Add a remote host to connect to it in Orca.",
           "syncedServerPlural": "Synced {{count}} servers",
           "syncedServerSingular": "Synced {{count}} server"
         },
@@ -475,7 +480,6 @@
       "sidebar": {
         "AddRemoteHostDialog": {
           "pairingCode": "Pairing code",
-          "pairingHelpSuffix": "on the server and paste the printed pairing URL.",
           "serverName": "Server name",
           "sshConfigPickerDescription": "Pick a host to fill the form. Nothing is saved until you click Save."
         },
@@ -651,7 +655,7 @@
         "agentCommandNotSignedIn": "Sign in to {{agent}} with `{{loginCommand}}` on the computer running this chat.",
         "agentNotSignedIn": "Sign in to {{agent}}.",
         "answerUnconfirmed": "Your answer was recorded but the agent did not confirm it.",
-        "antigravityNotSignedIn": "Antigravity isn't signed in. Sign in under Settings → Accounts → Antigravity.",
+        "antigravityNotSignedIn": "Antigravity isn't signed in. Sign in under Settings → Accounts → Antigravity. Then send your message again.",
         "argumentsMissingValue": "Saved Arguments need a value for {{option}}.",
         "argumentsMultipleValues": "Saved Arguments give {{option}} more than one value.",
         "argumentsPositionalPrompt": "Saved Arguments include a prompt.",
@@ -734,6 +738,8 @@
         "signInFirst": "Sign in first.",
         "signInThenRunCommand": "Sign in, then run /{{command}} again.",
         "signInThenSend": "Sign in, then send your message again.",
+        "startTimedOut": "{{agent}} took too long to start (no response to {{method}} after {{seconds}}s).",
+        "startTimedOutKeepsHappening": "If this keeps happening, the computer running this chat may be overloaded.",
         "stopRefused": "{{agent}} didn't stop.",
         "stopRefusedQuoted": "{{agent}} didn't stop: {{detail}}.",
         "theAgent": "The agent",
@@ -857,6 +863,7 @@
         "notDoneCommand": "The command didn't run.",
         "notDoneGoal": "The goal wasn't changed.",
         "notDoneOption": "The setting wasn't changed.",
+        "notDoneQueuedEdit": "Your edit wasn't saved.",
         "notDoneReadHistory": "This chat's history couldn't be loaded.",
         "notDoneSend": "Your message was not sent.",
         "notDoneStop": "The agent wasn't stopped.",

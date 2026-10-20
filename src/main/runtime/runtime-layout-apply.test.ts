@@ -192,7 +192,7 @@ describe('applyWindowLayoutCommand', () => {
       leafId: 'leaf-1',
       groupId: 'g1',
       // The window cannot name the new tab.
-      windowDetach: { ptyId: 'pty-1', tabId: 'tab-window' }
+      windowDetach: { ptyId: 'pty-1', tabId: 'tab-window', startupCwd: '/wt/app' }
     }
 
     await applyWindowLayoutCommand(
@@ -202,10 +202,10 @@ describe('applyWindowLayoutCommand', () => {
       onPaneMoved
     )
 
-    expect(applyLayoutCommand).toHaveBeenCalledWith({ ...move, windowDetach: { ptyId: 'pty-1' } }, [
-      'ssh:t',
-      'local'
-    ])
+    expect(applyLayoutCommand).toHaveBeenCalledWith(
+      { ...move, windowDetach: { ptyId: 'pty-1', startupCwd: '/wt/app' } },
+      ['ssh:t', 'local']
+    )
     expect(onPaneMoved).toHaveBeenCalledWith({
       worktreeId: 'wt-1',
       sourceTabId: 'term-1',
@@ -237,8 +237,13 @@ describe('applyWindowLayoutCommand', () => {
     expect(mocks.markAgentLaunchesClosedByUser).not.toHaveBeenCalled()
   })
 
-  it('moves editor tabs between workspaces of one partition, and refuses two partitions', async () => {
+  it('moves editor tabs within one partition or across two, and refuses a paired server', async () => {
     const { store, applyLayoutCommand } = storeWith()
+    const moveTabToWorkspaceAcrossPartitions = vi.fn(async (): Promise<LayoutApplyOutcome> => ({
+      ok: true,
+      result: {}
+    }))
+    store.moveTabToWorkspaceAcrossPartitions = moveTabToWorkspaceAcrossPartitions
     const move: WindowLayoutCommand = {
       type: 'moveTabToWorkspace',
       workspace: 'wt-1',
@@ -258,8 +263,15 @@ describe('applyWindowLayoutCommand', () => {
     expect(applyLayoutCommand).toHaveBeenCalledWith(move, ['ssh:target-1'])
 
     applyLayoutCommand.mockClear()
+    await applyWindowLayoutCommand(
+      store,
+      (worktreeId) => [worktreeId === 'wt-1' ? 'local' : 'ssh:target-1'],
+      move
+    )
+    expect(moveTabToWorkspaceAcrossPartitions).toHaveBeenCalledWith(move, 'local', 'ssh:target-1')
+    expect(applyLayoutCommand).not.toHaveBeenCalled()
+
     const partitions = {
-      'two partitions': [['local'], ['ssh:target-1'], 'other_partition'],
       'a paired server': [['local'], ['runtime:env-1'], 'host_not_owned'],
       'an unknown target': [['local'], [], 'host_not_owned']
     } as const

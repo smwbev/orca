@@ -1,17 +1,35 @@
 import type {
+  CommandOf,
   LayoutApplyOutcome,
-  LayoutCommand
+  LayoutCommand,
+  LayoutRefusalCode
 } from '../../../shared/workspace-layout/workspace-layout-command-types'
 import {
   resolveHostId,
   type SessionHostPartitionOperations
 } from '../loading-store/session-host-partitions'
-import type { StoreRuntimeState } from '../loading-store/store-runtime-state'
-import { applyLayout, topologyCommitContext } from './terminal-topology-commit'
+import type {
+  DurableProfileStateMutation,
+  StoreRuntimeState
+} from '../loading-store/store-runtime-state'
+import type { ExecutionHostId } from '../../../shared/execution-host'
+import { applyLayout, keepFrozen, topologyCommitContext } from './terminal-topology-commit'
+import { applyLayoutRenames } from './terminal-layout-renames-commit'
+import { moveTabAcrossPartitions } from './cross-partition-tab-move'
+import { writeRestorable } from './restorable-write'
+import { assignWorkspaceSessionPartition } from './terminal-topology-membership'
 import {
   repairDuplicatePtyPanesMutation,
   type DuplicatePtyPaneTransfer
 } from './duplicate-pty-pane-repair'
+
+/** A commit that writes only these partitions says so, so readers re-read just those. */
+function writingOnly<T>(
+  hostIds: readonly ExecutionHostId[],
+  mutate: () => DurableProfileStateMutation<T>
+): () => DurableProfileStateMutation<T> {
+  return () => ({ ...mutate(), writtenHostIds: hostIds })
+}
 
 type LayoutCommandRuntime = Pick<
   StoreRuntimeState,
@@ -40,8 +58,58 @@ export class LayoutCommandPersistence {
     const context = this[layoutCommandPersistenceContext]
     const resolved = hostIds.length > 0 ? hostIds.map(resolveHostId) : [resolveHostId()]
     return context.runtime.runDurableMutation(
-      applyLayout(resolved, command, topologyCommitContext(context))
+      writingOnly(resolved, applyLayout(resolved, command, topologyCommitContext(context)))
     )
+  }
+
+  /** `renameTabs`: each partition's renames in one durable write of all; resolves those refused. */
+  applyTabRenames(
+    batches: readonly { hostId: string; renames: readonly CommandOf<'renameTab'>[] }[]
+  ): Promise<{ rename: CommandOf<'renameTab'>; code: LayoutRefusalCode }[]> {
+    const context = this[layoutCommandPersistenceContext]
+    const resolved = batches.map(({ hostId, renames }) => ({
+      hostId: resolveHostId(hostId),
+      renames
+    }))
+    return context.runtime.runDurableMutation(
+      writingOnly(
+        resolved.map(({ hostId }) => hostId),
+        applyLayoutRenames(resolved, topologyCommitContext(context))
+      )
+    )
+  }
+
+  /** Moves editor tabs between workspaces of two partitions in one durable write of both. */
+  moveTabToWorkspaceAcrossPartitions(
+    command: CommandOf<'moveTabToWorkspace'>,
+    fromHostId: string,
+    toHostId: string
+  ): Promise<LayoutApplyOutcome> {
+    const commit = topologyCommitContext(this[layoutCommandPersistenceContext])
+    const [from, to] = [resolveHostId(fromHostId), resolveHostId(toHostId)]
+    return this[layoutCommandPersistenceContext].runtime.runDurableMutation(() => {
+      const moved = moveTabAcrossPartitions(
+        { hostId: from, session: commit.getSession(from) },
+        { hostId: to, session: commit.getSession(to) },
+        command
+      )
+      if (!moved.sessions) {
+        return { value: moved.value, persist: false }
+      }
+      const restores = (
+        [
+          [from, moved.sessions.from],
+          [to, moved.sessions.to]
+        ] as const
+      ).map(([hostId, session]) =>
+        writeRestorable(
+          () => commit.getSession(hostId),
+          (value) => commit.markDirty(assignWorkspaceSessionPartition(commit.state, hostId, value)),
+          keepFrozen(hostId, session, commit)
+        )
+      )
+      return { value: moved.value, rollback: () => restores.forEach((restore) => restore()) }
+    })
   }
 
   /**

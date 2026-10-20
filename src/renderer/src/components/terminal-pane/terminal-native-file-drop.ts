@@ -154,7 +154,7 @@ async function uploadRuntimeDropPaths(
       },
       args.dataPaths,
       destinationDir,
-      { assertCurrent: args.assertCurrent }
+      { assertCurrent: args.assertCurrent, nameExtensionlessImages: true }
     )
     const imported = results.filter((result) => result.status === 'imported')
     const importedPaths = imported.map((result) =>

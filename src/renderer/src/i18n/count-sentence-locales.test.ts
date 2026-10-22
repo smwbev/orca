@@ -38,7 +38,7 @@ describe('count sentences in the bundled locales', () => {
     await i18n.changeLanguage('en')
   })
 
-  it.each(['es', 'fr', 'ja', 'ko', 'zh'])(
+  it.each(['es', 'fr', 'pt', 'ja', 'ko', 'zh'])(
     '%s renders whole sentences for one and several',
     async (locale) => {
       await i18n.changeLanguage(locale)

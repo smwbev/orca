@@ -24,7 +24,7 @@
   "settings": {
     "chat": {
       "permissionsTitle": "新しいチャットの権限",
-      "permissionsDescription": "新しいチャットにのみ適用されます。ターミナルで開くAgentには、設定 → Agent → Agentの権限が適用されます。",
+      "permissionsDescription": "新しいチャットにのみ適用されます。Agentごとのデフォルト設定は、設定 → Agent にあります。",
       "description": "チャットの外観と動作を選びます。",
       "names": {
         "title": "チャット名",
@@ -95,7 +95,8 @@
         "korean": "한국어",
         "japanese": "日本語",
         "spanish": "Español",
-        "french": "Français"
+        "french": "Français",
+        "portuguese": "Português (Brasil)"
       },
       "statusBar": {
         "claudeToggleDescription": "アクティブなワークスペースの Claude トークンとコストの使用状況を表示します。",
@@ -198,11 +199,16 @@
       "savedEnvironment": "保存済みの値 · 置き換えるには入力",
       "newEnvironment": "値",
       "removeEnvironment": "削除",
+      "environmentUnclosedQuote": "環境を保存するには引用符を閉じてください。",
       "loadingHost": "Agent設定を読み込み中…",
       "updateHost": "Agentの起動設定を編集するには、このサーバーを更新してください。",
       "readFailed": "Agent設定を読み込めませんでした。ホストへの接続を確認して再試行してください。",
       "saveFailed": "Agent設定を保存できませんでした。ホストへの接続を確認して再試行してください。",
       "hostDefaults": "選択したホストで起動する新しいAgentの既定値。",
+      "defaultOpensAs": "{{value0}}の開き方",
+      "defaultOpensAsChat": "チャット",
+      "defaultOpensAsCli": "CLI",
+      "defaultOpensAsScope": "このコンピューターから起動する新しい{{value0}}セッション（ペアリングしたホスト上も含む）に適用されます。プロバイダーのスイッチと連動します。",
       "save": "保存",
       "clearDefault": "デフォルトの Agent をクリア"
     },
@@ -1210,6 +1216,12 @@
       }
     },
     "components": {
+      "hostPicker": {
+        "searchHosts": "ホストを検索…",
+        "noHostsMatch": "一致するホストはありません。",
+        "moreHosts_one": "ほかに {{count}} 台のホストがあります。名前で検索してください。",
+        "moreHosts_other": "ほかに {{count}} 台のホストがあります。名前で検索してください。"
+      },
       "CodexRestartChip": {
         "c72a5fb234": "再起動",
         "a4c8e1b2f7": "Codex はまだ {{value0}} としてサインインしています",
@@ -2886,12 +2898,12 @@
             "c6460cf584": "操作を取り戻す",
             "c44659e09f": "スマホ操作中",
             "c7e4a2b8f1": "スマホが操作中です",
-            "4b7e1c9a20": "スマートフォンにぴったりのサイズ",
-            "9d2f6a3e58": "電話セッションが終了しました。このウィンドウに合わせて復元します。",
+            "4b7e1c9a20": "スマホのサイズのままです",
+            "9d2f6a3e58": "スマホでの操作が終了しました。復元すると、このウィンドウのサイズに戻ります。",
             "1e5c8b7d43": "復元する",
             "6a3d9f2c71": "すべて復元する",
-            "8c1a5e9f36": "デスクトップの入力が一時停止されます。出力はストリーミングを続けます。",
-            "2f7b4d1e95": "全部取り戻せ",
+            "8c1a5e9f36": "デスクトップからの入力は止まっています。出力の表示は続きます。",
+            "2f7b4d1e95": "すべての操作を取り戻す",
             "3a9c5f7e12": "最小化する"
           },
           "TerminalAgentSessionForkDialog": {
@@ -3168,7 +3180,6 @@
         "bar": {
           "BrowserTab": {
             "6e0bc8f3a8": "ブラウザで開く",
-            "9dd880bd56": "右側のすべてのタブを閉じる",
             "1611a1324b": "閉じる",
             "5d6e89891f": "タブの複製",
             "911542656f": "ピンタブ",
@@ -3181,7 +3192,6 @@
             "52ce4f4605": "相対パスをコピー",
             "5b85754786": "パスのコピー",
             "bfd5797ef4": "Markdown プレビューを開く",
-            "e5ff31ccaf": "右側のすべてのタブを閉じる",
             "ba1369dd24": "すべてのエディターのタブを閉じる",
             "1ba8492c5b": "閉じる",
             "68cc610e7f": "名前を変更する",
@@ -3210,7 +3220,6 @@
           "SortableTabContextMenu": {
             "35e8892fd0": "タブの色",
             "2f697b3c31": "タイトルの変更",
-            "c1ee099c7e": "右側のすべてのタブを閉じる",
             "8d16f9cd30": "その他を閉じる",
             "89359a36f7": "閉じる",
             "7703990447": "グレー",
@@ -3400,8 +3409,6 @@
             "93b0de3c21": "再起動",
             "f85af9cda6": "リソースのスナップショットとターミナルセッションは利用できません。",
             "f8e0d794b4": "デーモンが応答していません",
-            "bd19fd7a59": "すべてのセッションを強制終了します",
-            "c9382662bb": "デーモンを再起動します",
             "59f178fe11": "{{value0}}、デーモンに到達できません",
             "21cacb16d1": "· リモート",
             "73a3fd68a9": "リポジトリを折りたたむ",
@@ -3450,7 +3457,12 @@
             "runtime_reconnect_attempt": "試行 {{value0}}",
             "connectedHostCount_one": "{{count}} 台のホスト",
             "connectedHostCount_other": "{{count}} 台のホスト",
-            "connecting": "接続中…",
+            "searchSshHosts": "SSH ホストを検索…",
+            "noMatchingSshHosts": "一致する SSH ホストはありません。",
+            "moreSshHostMatches_one": "ほかに {{count}} 件一致しています。入力を続けて絞り込んでください。",
+            "moreSshHostMatches_other": "ほかに {{count}} 件一致しています。入力を続けて絞り込んでください。",
+            "moreSshHosts_one": "他 {{count}} 台の SSH ホストから検索…",
+            "moreSshHosts_other": "他 {{count}} 台の SSH ホストから検索…",
             "runtime_unavailable_transport_up": "Orca は利用できません",
             "runtime_workspace_window_closed": "ワークスペースウィンドウを閉じた"
           },
@@ -6098,7 +6110,6 @@
           "9fec52de4b": "Cookie のコピー方法",
           "remoteServerFallback": "リモートサーバー",
           "loadAccountsFailed": "プロバイダーアカウントを読み込めませんでした。",
-          "remoteScopeAccounts": "{{value0}} が管理するアカウントを表示しています。アカウントの追加や再認証はそのサーバー上で行ってください。",
           "accountScopePrefix": "アカウントスコープ",
           "accountScopeRemoteServerUnnamed": "リモートサーバー",
           "remoteScopeAuthContext": "各アカウントは {{value0}} 上に独自のサインインコンテキストを保持します。",
@@ -6303,9 +6314,8 @@
           "ee110e1830": "デフォルトの基本参照はありません"
         },
         "BrowserDefaultZoomSetting": {
-          "2622126877": "新しく開いたブラウザタブに適用されるズームレベル。",
-          "bbeec087d3": "新しく開いたブラウザタブに適用されます。",
-          "265597101f": "デフォルトのズーム"
+          "265597101f": "デフォルトのズーム",
+          "siteDefault": "まだズームしていないサイトのズーム。"
         },
         "BrowserHomePageSetting": {
           "d4ddcd0056": "保存",
@@ -6833,7 +6843,6 @@
           "sourceControlGroupOrderDescription": "ソース管理で「変更」「ステージ済みの変更」「未追跡ファイル」のどれを先に表示するかを選択します。",
           "changesFirst": "変更を先頭",
           "stagedFirst": "ステージ済みを先頭",
-          "untrackedFirst": "未追跡を先頭",
           "compareAgainstUpstreamTitle": "既定の比較ベース",
           "compareAgainstUpstreamDescription": "ソース管理がコミット済み変更の比較に既定で使うベースを選択します。ブランチの upstream は現在のブランチに自動的に追従し、upstream がない場合はリポジトリの既定ブランチにフォールバックします。比較ベースは各ワークツリーの Git パネルからワークツリーごとに変更できます。Pull Request やリベースの対象は変更されません。",
           "compareBaseRepositoryDefault": "リポジトリ既定",
@@ -11036,7 +11045,7 @@
           "artifactsTitle": "成果物の共有",
           "artifactsDescription": "HTML ファイルと Markdown ファイルを公開し、Orca からのすべての共有リンクを管理します。",
           "relayTitle": "Orca リレー",
-          "relayDescription": "Orca Mobile を携帯電話または Wi-Fi 経由でこのデスクトップに接続します。",
+          "relayDescription": "Orca Mobile をモバイル回線でも、どの Wi-Fi からでも、このデスクトップに接続します。",
           "skillsTitle": "スキルの共有",
           "skillsDescription": "1 つのスキルまたはスキルセット全体を非公開リンクで共有し、使用するマシンにインストールします。",
           "keywordAccount": "アカウント",
@@ -11266,7 +11275,6 @@
           "keyOnHostDescription": "選択したコンソールの API Keys ページから API キーを貼り付けてください。{{host}} に保存され、使用量の更新時にそこからそのサイトにのみ送信されます。"
         },
         "sshManagedHostRemove": {
-          "descriptionServers": "Orca は {{label}} で動作しています。「リモート Orca サーバー」で {{label}} 上の Orca の ⋯ メニューを開き、「停止…」でホストから Orca を削除するか、ホストがもう存在しない場合は「削除…」を選んでください。その後、この SSH ホストを削除できます。",
           "openServers": "リモート Orca サーバーを開く"
         },
         "managedServers": {
@@ -11290,7 +11298,6 @@
             "confirmForget": "このデスクトップから登録を解除",
             "keepLinked": "リンクを維持",
             "forgetDescription": "ホストに接続せずに、このサーバーのリンクをここで解除します。ホストが復帰した場合、サーバーはまだそこで動作している可能性があります。",
-            "title": "{{host}} 上の Orca",
             "orcaVersion": "このホストの Orca: {{version}}",
             "stopOrcaDescription": "SSH ホスト上の Orca を停止し、この一覧から削除します。",
             "updateOrcaOnHost": "このホストの Orca を更新"
@@ -11371,7 +11378,7 @@
           "reassurance": "各ホスト上で動作し、あなた自身の SSH 接続を通じて利用します。コードやファイルは今の場所から動きません。ホストに移るのは、Orca のプロジェクト、タブ、ターミナルの一覧だけです。"
         },
         "sshHostServer": {
-          "sourceChanged": "古いバージョンの Orca がこのホストのプロジェクトを変更しました。再接続するには、その変更をこのホストの Orca サーバーに移動するか、サーバーのバージョンを維持してください。",
+          "sourceChanged": "このコンピューターには、このホストの Orca サーバーにまだないプロジェクトまたはフォルダーがあります。多くは古いバージョンの Orca で追加されたものです。再接続するには、それらをこのホストの Orca サーバーに移動するか、サーバーのバージョンを維持してください。",
           "deploying": "{{host}} に Orca をセットアップ中…",
           "converting": "{{host}} 上の Orca に移行中…",
           "connecting": "{{host}} 上の Orca に接続中…",
@@ -11414,7 +11421,8 @@
           "behindRolledBack": "このアプリより古い Orca サーバーを実行しています。前回の更新はロールバックされました。[サーバーを更新] で再試行してください。",
           "behindNoTemplate": "このアプリでは更新できない Orca サーバーを実行しています。このビルドにはこのホスト用のサーバーが含まれていません。",
           "behindMigrating": "Orca サーバーを実行しています。プロジェクトの移動が完了した後に更新されます。",
-          "behindCheckFailed": "Orca サーバーを実行しています。Orca はこのアプリより古いかどうかを確認できませんでした。"
+          "behindCheckFailed": "Orca サーバーを実行しています。Orca はこのアプリより古いかどうかを確認できませんでした。",
+          "refusedBlockedReason": "このホストにはまだ Orca がセットアップされていません。{{reason}}"
         },
         "deltaMove": {
           "action": "新規プロジェクトを移動…",
@@ -11554,7 +11562,7 @@
         "SshRestoreRemovedHosts": {
           "title": "削除したホストを復元しますか？",
           "description": "Orca で削除した ~/.ssh/config のホストが、設定とすべてのホスト選択に戻ります。",
-          "none": "~/.ssh/config から削除したホストはありません。",
+          "none": "Orca で削除した ~/.ssh/config のホストのうち、復元できるものはありません。",
           "confirm": "復元"
         },
         "SshTargetList": {
@@ -11623,9 +11631,6 @@
           "emptyDescription": "開発マシン、クラウドマシン、自宅のデスクトップをペアリングします。このコンピューターがスリープしても、セッションはそこで動き続けます。",
           "movePaused": "移行を一時停止中",
           "shareTitle": "このコンピューターを共有",
-          "shareDescriptionNamed": "ブラウザー、スマートフォン、別の Orca から {{name}} で作業できるようにします。",
-          "shareDescription": "ブラウザー、スマートフォン、別の Orca からこのコンピューターで作業できるようにします。",
-          "shareButton": "共有…",
           "done": "完了",
           "unreachableLead": "Orca はこのサーバーに接続できませんでした。",
           "updateFailedLead": "前回の更新は完了しませんでした。",
@@ -12026,11 +12031,9 @@
             "branchFilesChangedVsBaseOther": "{{ref}} と比べて {{count}} ファイルが変更されています",
             "48a003c1b1": "ステージ済みの変更",
             "d4ef4bafc5": "変更点",
-            "522f44dce5": "追跡されていないファイル",
             "9339382454": "すべてのステージを解除する",
             "24d2598eff": "すべてのステージ",
             "ce41708855": "すべて破棄",
-            "2f609a2e7c": "追跡されていないものをすべて削除",
             "3baf6c77b4": "すべてのメモをクリップボードにコピーします",
             "72f2bea3f4": "ノートを展開する",
             "d13edef890": "メモを折りたたむ",
@@ -12817,8 +12820,8 @@
             "deleteReasonUnsupportedAgent": "{{value0}} のセッションは Orca では削除できません。",
             "resumeInNewNativeChat": "新しいチャットで再開",
             "resumeInNewCli": "新しいターミナルで再開",
-            "resumeInNewCliTooltipFork": "この会話を新しい CLI セッションにフォークします。",
-            "resumeInNewCliTooltipChat": "ネイティブチャットはそのまま残ります。"
+            "resumeInNewCliTooltipFork": "この会話のコピーを使って、新しいターミナル Agent のセッションを開始します。",
+            "resumeInNewCliTooltipChat": "このチャットは変更されません。"
           },
           "AiVaultSessionDeleteDialog": {
             "title": "このセッションを削除しますか?",
@@ -12991,13 +12994,31 @@
             "sourceActionsUnavailable": "トランスクリプトのソースが利用できません。"
           },
           "AiVaultScanProgressStrip": {
+            "agentChecked": "{{agent}}: 履歴候補 {{total}} 件中 {{settled}} 件を確認済み",
             "fileCount_one": "{{value0}} 個のファイル",
             "fileCount_other": "{{value0}} 個のファイル",
             "databaseCount_one": "{{value0}} 個のデータベース",
             "databaseCount_other": "{{value0}} 個のデータベース",
             "scanning": "{{value0}}をスキャン中",
-            "reading": "{{value0}} ファイルを読み込み中",
+            "checking": "{{value0}} を確認中",
             "scanned": "{{value0}}をスキャン済み"
+          },
+          "run": {
+            "source": {
+              "control": {
+                "agent": {
+                  "action": {
+                    "start": {
+                      "git": {
+                        "operation": {
+                          "running": "実行中の Git 操作が完了するまで待ってください。"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -13487,7 +13508,7 @@
           "missing-description": "Windowsがペアリングサーバーをブロックする可能性があります。プライベートネットワーク上のこの Orca アプリとTCPポート{{port}}のルールを追加してください。",
           "open-settings": "ネットワーク設定を開く",
           "waiting": "Windowsを待機中…",
-          "allow": "電話接続を許可",
+          "allow": "スマホからの接続を許可",
           "repair-unverified": "Windows ファイアウォールのアクセスを確認できませんでした",
           "blocked-title": "Windowsが Orca モバイルをブロックしている可能性があります",
           "blocked-description": "既存のインバウンドブロックルールがペアリング例外を上書きする可能性があります。修復はこの Orca アプリの競合するTCPルールを削除し、プライベートネットワーク上のポート{{port}}を許可します。",
@@ -14706,6 +14727,9 @@
             }
           }
         },
+        "staleViewEdit": {
+          "rejected": "ファイルが別のビューで変更されたため、このビューでの最近の入力は破棄されました。"
+        },
         "richMarkdownLargeTextPaste": {
           "tooLarge": "貼り付け内容が大きすぎます。",
           "stopped": "大きなペーストは完成する前に止まりました。",
@@ -14720,11 +14744,11 @@
           "copy": "コピージョブ"
         },
         "ExternalFileChangeBanner": {
-          "7c41e90d12": "This file changed on disk while you have unsaved edits. Overwrite replaces the newer disk content.",
+          "7c41e90d12": "未保存の編集がある間に、ディスク上のファイルが変更されました。上書きすると、ディスク上の新しい内容が置き換えられます。",
           "3fa2b8d417": "ディスクから再読み込み",
           "a95d02c644": "編集内容を保持",
-          "overwrite": "Overwrite",
-          "keepHint": "Keeps your version. Your next save replaces the version on disk.",
+          "overwrite": "上書き",
+          "keepHint": "編集中の内容を保持します。次回の保存時にディスク上の内容が置き換えられます。",
           "5c02de9b31": "ディスクから再読み込みしました",
           "d1e830fa22": "元に戻す",
           "90b2ce7d43": "比較"
@@ -14765,10 +14789,13 @@
               }
             },
             "stale": {
-              "notice": "This file changed on disk since your edits. Use the banner to compare, reload, or overwrite."
+              "notice": "編集後にディスク上のファイルが変更されました。バナーから比較、再読み込み、または上書きを行ってください。"
             },
             "sectionStale": {
-              "notice": "This file changed on disk since this section loaded."
+              "notice": "このセクションの読み込み後に、ディスク上のファイルが変更されました。"
+            },
+            "notUtf8": {
+              "notice": "{{name}} は UTF-8 テキストではないため、自動保存は一時停止しています。UTF-8 に変換するには自分で保存してください。"
             }
           }
         },
@@ -15002,16 +15029,16 @@
                 "addQuickCommand": "クイックコマンドを追加",
                 "newQuickCommand": "新規クイックコマンド",
                 "splitChatRight": "チャットを右に分割",
-                "moveChatRight": "チャットを右に移動",
+                "newChatRight": "右に新しいチャット",
                 "chatPaneRight": "チャットペイン右",
                 "splitChatDown": "チャットを分割する",
-                "moveChatDown": "チャットを下に移動",
+                "newChatBelow": "下に新しいチャット",
                 "chatPaneBelow": "下のチャットペイン"
               },
               "splitChatRight": "右の分割チャット",
-              "splitChatRightDescription": "右側の分割ペインでアクティブなチャットを開きます。",
+              "splitChatRightDescription": "右側の分割ペインで新しいチャットを開きます。",
               "splitChatDown": "チャットを下に分割",
-              "splitChatDownDescription": "下の分割ペインでアクティブなチャットを開きます。"
+              "splitChatDownDescription": "下の分割ペインで新しいチャットを開きます。"
             }
           },
           "palette": {
@@ -15052,10 +15079,10 @@
           },
           "BrowserMobileDriverOverlay": {
             "a6914ee43f": "操作を取り戻す",
-            "f4ecd61552": "このタブはスマートフォンから制御されています。持ち帰ってデスクトップで使用します。",
+            "f4ecd61552": "このタブはスマホから操作されています。操作を取り戻すと、デスクトップで使えます。",
             "d9768ec642": "ブラウザ入力が一時停止されています",
             "20539eca03": "モバイルがこのブラウザを操作しています",
-            "7c31b0da94": "このタブを元に戻すことができませんでした。電話セッションを確認して、もう一度試してください。"
+            "7c31b0da94": "このタブの操作を取り戻せませんでした。スマホでの接続状況を確認して、もう一度試してください。"
           },
           "BrowserPane": {
             "1ded0d3168": "スクリーンショットをコピー",
@@ -15067,7 +15094,6 @@
             "734e4343ec": "ブラウザの注釈をクリアする",
             "95af781091": "Agent にフィードバックを送信する",
             "ac39b9366b": "送信",
-            "f796c774a4": "上に URL を入力して閲覧を開始します。",
             "366bf5d62c": "新規タブ",
             "781d6459ad": "再試行",
             "2fdca7df09": "閉じる",
@@ -15075,7 +15101,6 @@
             "ec75d0c412": "ブラウザの開発ツールを開く",
             "fc9be38f6f": "ページ要素に注釈を付ける",
             "fdfc7fe0ef": "ページ要素を取得する",
-            "a8f37f70c3": "ページの検査",
             "1b179ab561": "ページの URL をコピー",
             "f7ab83f7ed": "デフォルトのブラウザでページを開く",
             "0e080d820e": "リロード",
@@ -15128,7 +15153,21 @@
             "09a9489aa5": "表示",
             "2a4c4b8e1f": "コピー",
             "b71dc3d930": "再接続",
-            "fileUrlUnsupported": "このブラウザタブではローカルファイルを開くことができません。代わりに、ファイルで「プレビューを横に開く」を使用してください。"
+            "fileUrlUnsupported": "このブラウザタブではローカルファイルを開くことができません。代わりに、ファイルで「プレビューを横に開く」を使用してください。",
+            "addToDictionary": "辞書に追加",
+            "undo": "元に戻す",
+            "redo": "やり直す",
+            "cut": "切り取り",
+            "paste": "貼り付け",
+            "pasteAndMatchStyle": "スタイルを合わせて貼り付け",
+            "pasteAsPlainText": "プレーンテキストとして貼り付け",
+            "selectAll": "すべて選択",
+            "openImageInNewTab": "画像を新しいタブで開く",
+            "saveImage": "画像を保存",
+            "copyImage": "画像をコピー",
+            "copyImageAddress": "画像アドレスをコピー",
+            "searchSelection": "{{value0}} で「{{value1}}」を検索",
+            "inspect": "検証"
           },
           "BrowserToolbarMenu": {
             "429ef481f9": "キャンセル",
@@ -15152,7 +15191,16 @@
             "bf648471c5": "作成中…",
             "53bbe3dab4": "ファイルから {{value0}} 個の Cookie をインポートしました。",
             "c5f0e4d3b2a1": "{{value1}} ({{value2}}) から {{value0}} 件の Cookie をインポートしました。",
-            "d6a1f5e4c3b2": "{{value1}} から {{value0}} 件の Cookie をインポートしました。"
+            "d6a1f5e4c3b2": "{{value1}} から {{value0}} 件の Cookie をインポートしました。",
+            "zoom": "ズーム",
+            "zoomOut": "縮小",
+            "zoomIn": "拡大",
+            "resetZoom": "ズームをリセット",
+            "appearance": "外観",
+            "appearanceMatchOrca": "Orca に合わせる",
+            "appearanceLight": "ライト",
+            "appearanceDark": "ダーク",
+            "zoomPercent": "ズーム {{value0}}%"
           },
           "GrabConfirmationSheet": {
             "314a0aaa5b": "AIにアタッチする",
@@ -15176,7 +15224,8 @@
               "bar": {
                 "suggestions": {
                   "87fcdd0da9": "{{value0}} 検索"
-                }
+                },
+                "placeholder": "検索またはURLを入力"
               }
             }
           },
@@ -16380,7 +16429,7 @@
         "8d2e4f7a1b": "成果物の共有",
         "2c9a5b6e8d": "HTML ファイルと Markdown ファイルを公開し、Orca からのすべての共有リンクを管理します。",
         "6e3f1a9c5b": "Orca リレー",
-        "4b7d2e8f1a": "Orca Mobile を携帯電話または Wi-Fi 経由でこのデスクトップに接続します。",
+        "4b7d2e8f1a": "Orca Mobile をモバイル回線でも、どの Wi-Fi からでも、このデスクトップに接続します。",
         "9a4c6b2d7e": "スキルの共有",
         "3d8e5f1b9c": "非公開リンクでスキルを共有し、使用するマシンにインストールします。",
         "c5b3e8a17d": "Orca にサインインする"
@@ -16475,6 +16524,21 @@
         "copyFailed": "リンクをコピーできませんでした。",
         "signingIn": "サインイン中…",
         "cancel": "キャンセル"
+      },
+      "plainSshTerminal": {
+        "open": "通常の SSH ターミナルを開く",
+        "unmanaged": "通常の SSH — 管理対象外。Orca ワークスペースではないため、ここでの Agent とタブは追跡されず、このターミナルは復元されません。閉じると SSH セッションが終了します。",
+        "ended": "ssh はコード {{code}} で終了しました。読み終えたらこのウィンドウを閉じてください。",
+        "title": "通常の SSH · {{host}}",
+        "minimize": "最小化",
+        "close": "閉じてセッションを終了",
+        "unknownTarget": "この SSH ホストは Orca に保存されなくなりました。",
+        "notBlocked": "Orca はこのホストに再び接続できるため、代わりにそのターミナルを使用してください。通常の SSH は、Orca がホスト上でセットアップできない間だけ使用します。",
+        "alreadyOpen": "別の Orca ウィンドウで、このホストへの通常の SSH ターミナルがすでに開いています。",
+        "endedBySignal": "ssh は停止しました（シグナル {{signal}}）。読み終えたらこのウィンドウを閉じてください。",
+        "cancelled": "この通常の SSH ターミナルは開始前に閉じられました。",
+        "terminalUnavailable": "Orca はここでターミナルを開けませんでした。",
+        "openHint": "Orca がホスト上でセットアップできない間も、ホストで作業を続けられます。"
       }
     },
     "i18n": {
@@ -16612,9 +16676,9 @@
         "couldNotStart": "{{agent}} を起動できませんでした。",
         "editSavedArguments": "設定 > Agent > 引数で編集してください。",
         "couldNotRestart": "{{agent}} を再起動できませんでした。",
+        "cliTooOld": "{{agent}} {{installedVersion}} はチャットには古すぎます。{{minimumVersion}} 以降に更新してください。",
         "startTimedOut": "{{agent}} の起動に時間がかかりすぎました ({{seconds}} 秒経っても {{method}} に応答がありません)。",
         "startTimedOutKeepsHappening": "これが繰り返し起こる場合は、このチャットを実行しているコンピューターが過負荷になっている可能性があります。",
-        "codexCliTooOld": "Codex {{installedVersion}} はチャットには古すぎます。{{minimumVersion}} 以降に更新してください。",
         "notSignedIn": "{{agent}} にサインインしていません。",
         "claudeSystemNotSignedIn": "Claude にサインインしていません。`{{loginCommand}}` を実行するか、Claude アカウント設定でアカウントを選択してください。",
         "claudeManagedNotSignedIn": "この Claude アカウントにサインインしていません。設定の Claude アカウントで再度サインインしてください。",
@@ -16759,6 +16823,8 @@
         "settleEarlierMessage": "以前のメッセージが届くまで待つか、再試行してください。",
         "queueTooLarge": "キューで待機中のテキストが多すぎます。",
         "shrinkQueue": "キュー内のメッセージを削除するか、送信されるまで待ってから、もう一度お試しください。",
+        "messageTooLarge": "1 件のメッセージの上限である 256 KB を超えています。",
+        "shortenMessage": "短くするか分割してから、もう一度送信してください。",
         "optionRejected": "Agent はこの設定を受け入れませんでした。",
         "goalsUnsupported": "この Agent は目標に対応していません。",
         "agentRefused": "Agent がこれを拒否しました。",
@@ -16800,6 +16866,10 @@
         "uploadingFile": "{{name}} をアップロードしています…",
         "removeAttachment": "添付ファイルを削除する",
         "pastedImageLabel": "貼り付けた画像",
+        "pastedTextLabel": "貼り付けたテキスト",
+        "pasteNotSavedLabel": "貼り付けは保存されていません",
+        "pasteNotSaved": "この貼り付けは保存されませんでした。もう一度貼り付けるか、削除してください。",
+        "pastedTextTooLarge": "この貼り付けでメッセージが 1 件あたりの上限 256 KB を超えます。短くしてからもう一度貼り付けてください。",
         "draftNotSaved": "この下書きはまだ保存できていません。Orca は保存を再試行し続けます。",
         "imageNotBroughtBack": "{{name}} をこの下書きと一緒に復元できませんでした。もう一度添付するか、削除してください。",
         "pastedImageNotBroughtBack": "この貼り付けた画像をこの下書きと一緒に復元できませんでした。削除して、必要であればもう一度貼り付けてください。",
@@ -16887,7 +16957,8 @@
           "minimal": "最小",
           "medium": "中",
           "xhigh": "最高"
-        }
+        },
+        "imageUnavailable": "プレビューを利用できません"
       },
       "tool": {
         "result": "結果",
@@ -17055,7 +17126,9 @@
         "reason": "理由",
         "needsAccess": "アクセスが必要なパス",
         "plan": {
-          "file": "計画ファイル"
+          "file": "計画ファイル",
+          "reviewTitle": "提案されたプランをレビュー",
+          "refineHint": "プランを調整するとレビューが閉じ、変更内容を送信できます。"
         }
       },
       "launchPromptNotDelivered": "配信されませんでした — ターミナルを確認してください",
@@ -17097,6 +17170,8 @@
         "plan": "プラン",
         "historyRepaired": "このチャットの履歴の一部を読み込めませんでした。",
         "historyItemTooLarge": "チャットのこの部分は大きすぎるため表示できません。",
+        "continuedOutside": "このチャットの外で続けられました。",
+        "continuedOutsideRewound": "このチャットの外で続けられました。上の以前の返信は、この会話の履歴にはもうありません。",
         "stoppedBeforeStart": "手動で停止しました",
         "dismiss": "閉じる",
         "copyError": "エラーをコピー",
@@ -17285,7 +17360,7 @@
       "thought": "考えました",
       "thoughtForDuration": "{{duration}} 考えました",
       "structuredSessionHostDeclined": "{{value0}} をターミナルで開きました",
-      "structuredSessionHostDeclinedDescription": "このサーバーはこのワークスペースで {{value0}} チャットを実行できません。",
+      "structuredSessionHostDeclinedDescription": "このワークスペースでは {{value0}} チャットを実行できません。",
       "structuredSessionHostUnreachable": "{{value0}} に接続できませんでした",
       "structuredSessionHostUnreachableDescription": "Orca は {{value0}} チャットを開きませんでした。サーバーへの接続を確認して、もう一度お試しください。",
       "hostOutage": {
@@ -17337,22 +17412,23 @@
       },
       "claudeSignIn": {
         "signingIn": "サインイン中…"
+      },
+      "imagePreview": {
+        "fileActions": "ファイル操作",
+        "linkActions": "リンク操作"
       }
     },
     "tab": {
       "bar": {
         "SortableTabContextMenu": {
-          "switchToTerminalView": "ターミナル Agent に切り替える",
-          "switchToChatView": "チャット UI に切り替える",
-          "closeTabsToLeft": "左側のすべてのタブを閉じる"
+          "switchToTerminalView": "ターミナル Agent で続ける",
+          "switchToChatView": "チャット UI で続ける"
         },
         "BrowserTab": {
-          "closeOthers": "その他を閉じる",
-          "closeTabsToLeft": "左側のすべてのタブを閉じる"
+          "closeOthers": "その他を閉じる"
         },
         "EditorFileTabContextMenu": {
-          "closeOthers": "その他を閉じる",
-          "closeTabsToLeft": "左側のすべてのタブを閉じる"
+          "closeOthers": "その他を閉じる"
         },
         "CopyTabIdMenuItem": {
           "copied": "タブ ID をコピーしました",
@@ -17611,6 +17687,17 @@
           "checking": "変更を確認中…",
           "checkingDetails": "確認中…",
           "unavailableDetails": "詳細を利用できません"
+        },
+        "unsavedEdits": {
+          "discarded_one": "{{count}} 個のファイルの未保存の編集は破棄されます：",
+          "discarded_other": "{{count}} 個のファイルの未保存の編集は破棄されます：",
+          "moreFiles": "ほか {{value}} 件",
+          "blocked_one": "先に {{name}} の未保存のファイル {{count}} 個を保存するか閉じてください",
+          "blocked_other": "先に {{name}} の未保存のファイル {{count}} 個を保存するか閉じてください",
+          "closedToast_one": "{{workspace}} の未保存の編集がある {{count}} 個のファイルを閉じました",
+          "closedToast_other": "{{workspace}} の未保存の編集がある {{count}} 個のファイルを閉じました",
+          "reopen": "再度開く",
+          "reopenFailed": "一部のファイルを再度開けませんでした。ワークスペースを開いて、もう一度「再度開く」を試してください。"
         }
       }
     },
@@ -17999,6 +18086,27 @@
     },
     "request": {
       "pairedServerWorkspace": "このワークスペースはペアリングされたサーバーで実行されています。そのサーバーのブラウザタブを使用してください。"
+    },
+    "newTab": {
+      "emptyHint": "上で検索するかアドレスを入力してください。訪問したサイト、このワークスペースで実行中の開発サーバー、その PR と Issue がここに表示されます。",
+      "openServerFailed": "{{address}} を開けませんでした",
+      "removedFromHistory": "履歴から「{{title}}」を削除しました",
+      "removeSuggestion": "履歴から削除",
+      "state": {
+        "closed": "閉じました",
+        "draft": "下書き",
+        "merged": "マージ済み",
+        "open": "オープン"
+      },
+      "suggested": "おすすめ",
+      "thisWorkspace": "このワークスペース",
+      "undo": "元に戻す",
+      "checks": {
+        "failing": "チェック失敗",
+        "passing": "チェック成功",
+        "pending": "チェック待ち"
+      },
+      "runningElsewhere": "他のワークスペースで {{count}} 件実行中"
     }
   },
   "runtimeRpc": {
@@ -18150,8 +18258,12 @@
       "status": "PR #{{number}} のリンクが解除されました"
     },
     "discard": {
+      "deleteUntrackedFileDescription": "この未追跡ファイルは完全に削除されます。この操作は元に戻せません。",
+      "deleteUntrackedFilesDescription": "これらの {{count}} 個の未追跡ファイルは完全に削除されます。この操作は元に戻せません。",
       "restoreStagedVersionDescription": "これにより、最後にステージングされたバージョンが復元され、削除が破棄されます。これを元に戻すことはできません。",
-      "unstagedChangesDescription": "これにより、このファイルに対するステージングされていない変更が元に戻ります。これを元に戻すことはできません。"
+      "unstagedChangesDescription": "これにより、このファイルに対するステージングされていない変更が元に戻ります。これを元に戻すことはできません。",
+      "unstagedSelectionIncludingUntrackedDescription": "ステージングされていない変更を元に戻し、この選択内の未追跡ファイルを完全に削除します。この操作は元に戻せません。",
+      "unstagedFilesIncludingUntrackedDescription": "ステージングされていない変更を元に戻し、これらの {{count}} 個のファイルに含まれる未追跡ファイルを完全に削除します。この操作は元に戻せません。"
     }
   },
   "rendererRecovery": {
@@ -18262,6 +18374,7 @@
       "empty": "サブ Agent が見つかりませんでした。"
     },
     "antigravityReferenceDescription": "このトランスクリプトを参照として使用して、新規 Antigravity CLI 会話を続けます。",
+    "searchHitSourceHost": "{{value0}} で見つかりました",
     "antigravityIdeToCli": "IDE → CLI",
     "antigravity2ToCli": "2.0 → CLI",
     "continueInCli": "CLIで続行",
@@ -18513,7 +18626,12 @@
     }
   },
   "fileSearch": {
-    "failed": "検索失敗。もう一度お試しください"
+    "failed": "検索失敗。もう一度お試しください",
+    "filters": {
+      "toggle": "検索の詳細を切り替える",
+      "active": "{{count}} 件が有効"
+    },
+    "noResults": "結果がありません。別の検索を試すか、フィルターを調整してください。"
   },
   "csv": {
     "detectingDelimiter": "デリミタを検出中…",
@@ -18673,7 +18791,17 @@
   "tabHoverCard": {
     "browser": "ブラウザ",
     "editor": "エディター",
-    "terminal": "ターミナル"
+    "terminal": "ターミナル",
+    "namingFailure": {
+      "regenerating": "再生成中…",
+      "regenerate": "名前を再生成",
+      "title": "このチャットに名前を付けられませんでした",
+      "description": "チャット名 Agent がエラーで停止したため、チャットは最初のメッセージを名前として使います。",
+      "viewError": "エラーを表示",
+      "dialogTitle": "チャットの自動命名に失敗しました",
+      "dialogDescriptionStart": "Orca は",
+      "dialogDescriptionEnd": "の名前を最初のメッセージから生成できませんでした。"
+    }
   },
   "jira": {
     "savedFilters": {
@@ -18798,5 +18926,84 @@
       "preparingLabel": "更新を準備中",
       "preparingAriaLabel": "更新を準備中。クリックして展開します。"
     }
+  },
+  "onboarding": {
+    "language": {
+      "back": "言語",
+      "requestPrompt": "Orcaに対応してほしい言語は何ですか？",
+      "requestSuccess": "言語のリクエストを記録しました。設定を続けられます。",
+      "requestError": "リクエストを記録できませんでした。再試行してください。",
+      "retry": "再試行",
+      "requestAction": "言語をリクエスト",
+      "title": "表示言語",
+      "device": "システム言語：{{language}}",
+      "unsupported": "システム言語：{{language}}。この言語はまだサポートされていません。",
+      "unknown": "システム言語を検出できませんでした。以下から選択してください。",
+      "loadError": "この言語を読み込めませんでした。再試行してください。",
+      "saveError": "言語設定を保存できませんでした。再試行してください。",
+      "other": "その他の言語…",
+      "settingsError": "設定を読み込めませんでした。",
+      "loadingSettings": "設定を読み込み中…",
+      "loading": "言語を読み込み中…",
+      "saving": "言語を保存中…"
+    }
+  },
+  "resourceManager": {
+    "pty": {
+      "bound": "タブあり",
+      "unbound": "タブなし",
+      "unavailable": "利用不可",
+      "ownerPresent": "あり",
+      "ownerAbsent": "なし",
+      "ownerUnknown": "不明",
+      "sessionId": "Orca セッション ID",
+      "incarnation": "世代",
+      "workspace": "ワークスペース",
+      "cwd": "最後に報告された cwd",
+      "binding": "タブ",
+      "agentOwnership": "Agent 所有権の証拠",
+      "observationTime": "観測時刻",
+      "pid": "PID",
+      "idCopied": "Orca セッション ID をコピーしました",
+      "copyFailed": "Orca セッション ID をコピーできませんでした",
+      "detailsNamed": "{{terminal}} の詳細",
+      "goToTerminal": "ターミナルに移動",
+      "copyId": "Orca セッション ID をコピー",
+      "refreshBeforeEnd": "PTY を更新するまで終了できません。",
+      "endUnsupported": "このターミナルは終了できません。ホストが必要な安全チェックをサポートしていません。タブまたはホスト上で閉じてください。",
+      "checkingTabs": "タブを確認中…",
+      "endTitle": "{{terminal}} を終了しますか？",
+      "endDescription": "このターミナルとその子プロセスを終了します。未保存の作業が失われる可能性があります。",
+      "lastProcess": "最後に確認されたプロセス: {{process}}",
+      "cancel": "キャンセル",
+      "ending": "終了中…",
+      "end": "ターミナルを終了",
+      "unassigned": "未割り当て",
+      "thisComputer": "このコンピューター",
+      "localOwnedCount_one": "このコンピューターの Orca PTY {{count}} 個",
+      "localOwnedCount_other": "このコンピューターの Orca PTY {{count}} 個",
+      "withoutTab": "タブなし {{count}} 個",
+      "observedTime": "最終観測: {{time}}",
+      "failed": "検証不可: ローカルターミナルを更新できませんでした。最後に観測されたターミナルを表示しています。",
+      "retry": "再試行",
+      "loading": "ターミナルを読み込み中…",
+      "noLocalOrcaPtys": "ローカル Orca PTY はありません",
+      "openNamed": "{{terminal}} を開く",
+      "endNamed": "{{terminal}} を終了",
+      "endShort": "終了",
+      "endHint": "このターミナルとその子プロセスを終了します。",
+      "claimed": "このターミナルは Agent が所有しています。再試行する前に更新してください。",
+      "attached": "このターミナルにはクライアントが接続されています。再試行する前に更新してください。",
+      "unverifiableEnd": "検証不可: ホストが結果を確認できませんでした。ターミナルはまだ実行中の可能性があります。"
+    },
+    "resources": "リソース",
+    "ptys": "PTY",
+    "localDaemonScope": "これはこのコンピューター上のターミナルに影響します。",
+    "countUnavailable": "ターミナル数を取得できません",
+    "openToObserve": "リソースを開いてターミナルセッションを監視します。",
+    "refresh": "更新",
+    "restartLocal": "ローカルデーモンを再起動",
+    "killAllLocal": "すべてのローカルセッションを終了",
+    "killFailed": "ターミナルを終了できませんでした。最後に観測されたセッションを保持しています。"
   }
 }

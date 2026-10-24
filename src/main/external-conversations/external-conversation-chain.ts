@@ -1,17 +1,17 @@
-import { refused, type ConnectorRefusal, type Delivery } from './external-conversation-types'
+import {
+  CONNECTOR_REFUSALS,
+  refused,
+  type ConnectorRefusal,
+  type Delivery
+} from './external-conversation-types'
 
 type Lane = { controller: AbortController; signal: AbortSignal; tail: Promise<unknown> }
 
-/** Why an aborted conversation signal stopped: the seam's disable, or this conversation's cancel. */
 export function refusalOf(signal: AbortSignal): ConnectorRefusal {
-  return signal.reason === 'agent_not_reachable' ? 'agent_not_reachable' : 'connectors_disabled'
+  return CONNECTOR_REFUSALS.find((reason) => reason === signal.reason) ?? 'connectors_disabled'
 }
 
-/**
- * Ordering per conversation: one active head, the rest behind it in arrival order. Disposal, or
- * cancelling one conversation, settles everything still waiting at once and aborts the head's
- * signal; the head keeps the outcome of what it already wrote.
- */
+/** Serialize each conversation; cancellation aborts its head and settles queued work without undoing prior writes. */
 export class ConversationChain {
   private readonly lanes = new Map<string, Lane>()
 
@@ -41,10 +41,7 @@ export class ConversationChain {
     return result
   }
 
-  /**
-   * Settles this conversation's running and queued work; later work starts a fresh lane. Given a
-   * lane's signal, only that lane is settled, never one opened after it.
-   */
+  /** With laneSignal, cancel only that lane so a replacement lane remains untouched. */
   cancel(id: string, reason: ConnectorRefusal, laneSignal?: AbortSignal): void {
     const lane = this.lanes.get(id)
     if (!lane || (laneSignal && lane.signal !== laneSignal)) {

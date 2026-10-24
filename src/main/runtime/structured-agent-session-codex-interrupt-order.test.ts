@@ -36,6 +36,7 @@ import {
   ensureStructuredAgentSessionHost,
   stopStructuredAgentSessionRuntime
 } from './structured-agent-session-runtime'
+import { scriptedCodexTransport } from './scripted-codex-transport.test-fixture'
 
 const CALLER = { callerKey: 'codex-interrupt-order-test' }
 const MODEL = {
@@ -96,6 +97,7 @@ async function stop(turnId?: string): Promise<void> {
   if (!stopped.ok) {
     throw new Error(JSON.stringify(stopped.refusal))
   }
+  await host.collaboratorsForTests().serialize(SESSION, async () => {})
 }
 
 /** Every end row written for turn-1, as a row or a lifecycle batch's mutation, in order. */
@@ -220,8 +222,7 @@ beforeEach(async () => {
     resolveClaudeAuthPolicy: () => ({ account: 'managed' }),
     resolveCodexCommand: () => 'codex',
     resolveEnvironment: async () => ({ PATH: process.env.PATH }),
-    openCodexConnection: openConnection,
-    readProcessStartTime: async () => 1_700_000_000_000
+    ...scriptedCodexTransport(openConnection)
   })
   const attachParams = hostTestAttachParams(null, { providerHandle: undefined })
   attachParams.envelope.clientOperationId = operationId()

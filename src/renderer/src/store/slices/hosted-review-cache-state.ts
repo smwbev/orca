@@ -6,11 +6,10 @@ import type {
   HostedReviewInfo
 } from '../../../../shared/hosted-review'
 import type { Repo } from '../../../../shared/repo-types'
+import type { PRInfo } from '../../../../shared/github/pull-request-types'
 import { getRepoExecutionHostId } from '../../../../shared/execution-host'
-import {
-  runtimeTargetForOwnerHostId,
-  type RuntimeClientTarget
-} from '@/runtime/runtime-client-target'
+import { ipcOrRuntimeTargetForHostId } from '@/runtime/runtime-client-target'
+import type { RuntimeClientTarget } from '../../../../shared/runtime-client-target'
 
 export type HostedReviewCacheEntry<T> = {
   data: T | null
@@ -150,7 +149,7 @@ export function shouldRefetchGitHubScopedResultForNoHint(
 }
 
 export function isStaleMergedGitHubReviewForHead(
-  cached: HostedReviewCacheEntry<HostedReviewInfo> | undefined,
+  cached: { data: HostedReviewInfo | PRInfo | null } | undefined,
   currentHeadOid: string | null | undefined
 ): boolean {
   // Why: a merged GitHub PR is only shown when the worktree sits on its head
@@ -163,7 +162,9 @@ export function isStaleMergedGitHubReviewForHead(
   }
   const data = cached?.data
   return (
-    data?.provider === 'github' &&
+    data !== null &&
+    data !== undefined &&
+    (!('provider' in data) || data.provider === 'github') &&
     data.state === 'merged' &&
     typeof data.headSha === 'string' &&
     data.headSha.length > 0 &&
@@ -220,7 +221,7 @@ export function hostedReviewRepoOwnerTarget(
   repo: Pick<Repo, 'connectionId' | 'executionHostId'> | undefined
 ): RuntimeClientTarget {
   return (
-    (repo ? runtimeTargetForOwnerHostId(getRepoExecutionHostId(repo)) : null) ?? { kind: 'local' }
+    (repo ? ipcOrRuntimeTargetForHostId(getRepoExecutionHostId(repo)) : null) ?? { kind: 'local' }
   )
 }
 

@@ -17,14 +17,8 @@ function isWellFormedLocaleId(value: string): boolean {
   }
 }
 
-// Why: locale ids become i18next bundle keys and filenames. This bounded BCP
-// 47 subset covers current community packs without accepting path syntax.
-// The shape check alone is looser than BCP 47 in one direction: tags like
-// `en-US-US` or `en-aaa` match it but are not well-formed, so Intl throws on
-// them. That throw surfaces nowhere — the pack installs, every string
-// translates, and only dates and relative times quietly fall back to English.
-// Delegating the grammar to Intl rejects the tag at install instead, where the
-// pack author can still fix it.
+// Locale IDs become filenames/i18next keys; a bounded BCP 47 subset excludes path syntax.
+// Intl rejects shape-valid, ill-formed tags (`en-US-US`) at install, not silently when formatting.
 export const pluginLocaleIdSchema = z
   .string()
   .min(2)

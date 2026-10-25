@@ -1,5 +1,6 @@
 import type { AppState } from './types'
-import type { HostRoute, RuntimeClientTarget } from '../runtime/runtime-client-target'
+import type { HostRoute } from '../runtime/runtime-client-target'
+import type { RuntimeClientTarget } from '../../../shared/runtime-client-target'
 import { parseExecutionHostId } from '../../../shared/execution-host'
 import {
   getRuntimeEnvironmentRevision,
@@ -12,12 +13,9 @@ import {
 } from './slices/runtime-environment-ssh'
 import { getLocalSshTargetConnectionGeneration } from './slices/ssh'
 import { getRuntimeEnvironmentConnectionGeneration } from './slices/runtime-status'
-import { getRuntimeTargetHostId } from './runtime-target-host'
+import { getRuntimeTargetHostId } from '../runtime/runtime-client-target'
 
-/**
- * Who answered: pairing, runtime incarnation (connection generation) and, for an SSH place, that
- * target's connection generation. Guards mutations; unrelated catalog or SSH churn never moves it.
- */
+/** Fence by pairing/runtime incarnation and SSH target generation, not unrelated catalog/connection churn. */
 export type HostIdentityFence = {
   route: HostRoute
   pairingRevision: number | undefined
@@ -130,10 +128,7 @@ async function listRuntimeEnvironmentsForAllHostLoad(): Promise<{ id: string }[]
   }
 }
 
-/**
- * Remote half of an all-host catalog load: claims each runtime's fence, then loads it. Settlement
- * stays with the caller; a load that stops being current while listing claims no fence.
- */
+/** Claim each runtime fence before listing; stale loads claim none and callers own settlement. */
 export async function loadRuntimeHostCatalogs(
   get: CatalogFenceStore,
   kind: HostCatalogKind,

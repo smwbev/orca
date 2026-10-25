@@ -120,8 +120,7 @@ describe('content-pack manifest contributions', () => {
 
   it.each([
     ['language pack', { languagePacks: [{ locale: 'en_US', path: 'locale.json' }] }],
-    // Shape-legal but not well-formed: the old regex let these through, and the
-    // pack then loaded with dates silently falling back to English.
+    // Shape-legal but ill-formed: the regex alone let these load with dates falling back to English.
     ['duplicate region', { languagePacks: [{ locale: 'en-US-US', path: 'locale.json' }] }],
     ['unknown subtag', { languagePacks: [{ locale: 'en-aaa', path: 'locale.json' }] }],
     ['language pack path', { languagePacks: [{ locale: 'pt-BR', path: '../outside.json' }] }],

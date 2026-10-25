@@ -41,13 +41,10 @@ const TRANSLATABLE_PLUGIN_CHROME = new Set([
   'auto.components.settings.plugins.search.logs',
   'auto.components.settings.plugins.search.development',
 
-  // Maturity badge on the pane heading. Says how finished the feature is, not
-  // what a plugin may do.
+  // Maturity badge on the pane heading: how finished the feature is, not what a plugin may do.
   'auto.components.settings.PluginsSettingsSection.experimental',
 
-  // The install form: tab labels, field labels, placeholders, and the "you
-  // left this blank" validation. `gitRefRequired` stays protected — it argues
-  // why pinning a ref matters, which is a security claim.
+  // Install form labels and blank-field checks; `gitRefRequired` argues for pinning, so stays protected.
   'auto.components.settings.PluginInstallDialog.cancel',
   'auto.components.settings.PluginInstallDialog.gitLabel',
   'auto.components.settings.PluginInstallDialog.gitPlaceholder',
@@ -62,10 +59,7 @@ const TRANSLATABLE_PLUGIN_CHROME = new Set([
   'auto.components.settings.PluginInstallDialog.source',
   'auto.components.settings.PluginInstallDialog.title',
 
-  // Log affordances and runtime state on an installed row. Trust state stays
-  // protected — `blocked`, `bundled`, `dev`, `needsReview`, `invalid`,
-  // `viewAdvisory` — as do the enable, remove and rollback actions: those are
-  // what the reader weighs when deciding whether this plugin should run.
+  // Installed-row log controls and runtime state; trust state and enable/remove/rollback stay protected.
   'auto.components.settings.PluginSettingsRow.hideLogs',
   'auto.components.settings.PluginSettingsRow.loadingLogs',
   'auto.components.settings.PluginSettingsRow.logCount',

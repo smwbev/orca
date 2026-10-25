@@ -67,10 +67,7 @@ describe('plugin language-pack artifacts', () => {
     ).toMatchObject({ ok: false, error: expect.stringContaining('protected security copy') })
   })
 
-  // Why: driven off the list itself rather than a sample, so a path added
-  // tomorrow is exercised the day it lands. Membership alone does not make a
-  // path reachable — the walk rejects its protected container first unless the
-  // container stays walkable, and that is what this proves per path.
+  // Every listed path must reach the parser: its protected container has to stay walkable.
   it.each(translatablePluginChromePaths())(
     'lets a language pack translate %s, which asserts nothing',
     (path) => {
@@ -80,10 +77,7 @@ describe('plugin language-pack artifacts', () => {
     }
   )
 
-  // Why: opening the install form and the log affordances must not open the
-  // trust state that sits beside them in the same components. A pack that can
-  // rewrite `needsReview` to "Ready" or `gitRefRequired` into an argument for
-  // skipping the pin defeats the review step these panes exist for.
+  // Exempting form and log copy must not expose trust state beside it (`needsReview`, `gitRefRequired`).
   it.each([
     ['PluginSettingsRow', 'needsReview', 'Проверено'],
     ['PluginSettingsRow', 'invalid', 'В порядке'],

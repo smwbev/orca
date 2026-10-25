@@ -46,9 +46,7 @@ describe('translatable plugin chrome', () => {
     expect(translatablePluginChromePaths().filter((path) => path.endsWith('Failed'))).toEqual([])
   })
 
-  // Why: every other case is driven off the list, so a shrinking list shrinks
-  // its own tests and still passes. A count per component is the one check the
-  // list cannot satisfy that way, and it does not keep a second copy of it.
+  // List-driven cases shrink with the list; fixed per-component counts catch a dropped path.
   it('exempts a fixed number of paths in each component', () => {
     const counts: Record<string, number> = {}
     for (const path of translatablePluginChromePaths()) {

@@ -18,7 +18,7 @@ const mocks = vi.hoisted(() => ({
   prepare: vi.fn(),
   toastError: vi.fn()
 }))
-vi.mock('@/runtime/runtime-file-client', () => ({
+vi.mock('@/runtime/runtime-file-import-client', () => ({
   importExternalPathsToRuntime: mocks.importPaths
 }))
 vi.mock('sonner', () => ({ toast: { error: mocks.toastError } }))
@@ -28,7 +28,6 @@ const clearDrag = vi.fn()
 const setSelected = vi.fn()
 
 function Explorer({ worktreeId, root }: { worktreeId: string; root: string }) {
-  // Like the tree pane, the owner is the one the tree root loaded with.
   const ownerRef = useFileExplorerImport({
     worktreeId,
     worktreePath: root,

@@ -15,11 +15,9 @@ import {
   findIndexedWorktreeOwner,
   findIndexedWorktreeOwnerForHost
 } from './worktree-runtime-owner-index'
-import type { WorktreeRuntimeOwnerState } from './worktree-runtime-owner'
-import {
-  runtimeTargetForExecutionHostId,
-  type RuntimeClientTarget
-} from '@/runtime/runtime-client-target'
+import type { WorktreeRuntimeOwnerState } from './worktree-runtime-owner-state'
+import { runtimeRpcTargetForAuthorityKey } from '@/runtime/runtime-client-target'
+import type { RuntimeClientTarget } from '../../../shared/runtime-client-target'
 
 function getResolvedFolderHost(
   state: WorktreeRuntimeOwnerState,
@@ -54,10 +52,7 @@ function getResolvedFolderHost(
   return folder && (group || preferredHostId) ? (preferredHostId ?? LOCAL_EXECUTION_HOST_ID) : null
 }
 
-/**
- * Resolves a host only when hydrated ownership proves it. Why: a restored SSH
- * worktree can temporarily collide with a local repo row during catalog load.
- */
+/** Require hydrated ownership: restored SSH worktrees can collide with local repo rows while catalogs load. */
 export function getResolvedExecutionHostIdForWorktree(
   state: WorktreeRuntimeOwnerState,
   worktreeId: string | null | undefined
@@ -102,10 +97,10 @@ export function getResolvedExecutionHostIdForWorktree(
 export function getActiveWorkspaceOwnerTarget(
   state: WorktreeRuntimeOwnerState
 ): RuntimeClientTarget | null {
-  // Why: with no paired server every RPC owner is this app; skip the owner-index build.
+  // Without paired servers all RPC owners are this app; skip building the owner index.
   if (state.runtimeEnvironmentCatalogHydrated && state.runtimeEnvironments?.length === 0) {
     return null
   }
   const hostId = getResolvedExecutionHostIdForWorktree(state, state.activeWorktreeId)
-  return hostId ? runtimeTargetForExecutionHostId(hostId) : null
+  return hostId ? runtimeRpcTargetForAuthorityKey(hostId) : null
 }

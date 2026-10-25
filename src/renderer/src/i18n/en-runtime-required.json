@@ -285,6 +285,10 @@
         "GeneralWorkspaceSettingsSection": {
           "externalWorktreesDescription": "Choose whether worktrees created outside Orca appear by default."
         },
+        "OrchestrationPane": {
+          "chatErrorEscalationKeywordChat": "chat",
+          "chatErrorEscalationKeywordError": "error"
+        },
         "OrchestrationSkillAgentCoverage": {
           "fullCoverage_one": "All 1 detected agent has the skill.",
           "fullCoverage_other": "All {{value0}} detected agents have the skill."

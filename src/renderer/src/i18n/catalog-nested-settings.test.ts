@@ -15,7 +15,6 @@ const AGENT_SETTINGS_KEYS = [
   'savedEnvironment',
   'newEnvironment',
   'removeEnvironment',
-  'loadingHost',
   'updateHost',
   'readFailed',
   'saveFailed',

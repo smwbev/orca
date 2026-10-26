@@ -34,13 +34,28 @@ export function resolveDropdownItems(inputs: DropdownActionInputs): DropdownEntr
   ]
   if (conflictOperation === 'merge' || conflictOperation === 'rebase') {
     const isRebase = conflictOperation === 'rebase'
-    const label = isRebase ? 'Abort rebase' : 'Abort merge'
+    const label = isRebase
+      ? translate('auto.components.right.sidebar.SourceControl.425f138269', 'Abort rebase')
+      : translate('auto.components.right.sidebar.SourceControl.540ca8f78c', 'Abort merge')
     entries.push(
       { kind: 'separator', id: 'before-abort' },
       {
         kind: isRebase ? 'abort_rebase' : 'abort_merge',
         label,
-        title: globalBusy ? 'Operation in progress…' : `Abort the ${conflictOperation} in progress`,
+        title: globalBusy
+          ? translate(
+              'auto.components.right.sidebar.source.control.dropdown.items.titleOperationInProgress',
+              'Operation in progress…'
+            )
+          : isRebase
+            ? translate(
+                'auto.components.right.sidebar.source.control.dropdown.items.titleAbortRebaseInProgress',
+                'Abort the rebase in progress'
+              )
+            : translate(
+                'auto.components.right.sidebar.source.control.dropdown.items.titleAbortMergeInProgress',
+                'Abort the merge in progress'
+              ),
         disabled: globalBusy,
         variant: 'destructive'
       }

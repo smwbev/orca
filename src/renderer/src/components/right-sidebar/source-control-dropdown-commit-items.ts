@@ -1,6 +1,10 @@
 // Share commit blockers across Commit, Commit & Push, and Commit & Sync so disabled reasons agree.
 
 import { translate } from '@/i18n/i18n'
+import {
+  COMMIT_MESSAGE_REQUIRED_REASON,
+  type CommitDisabledReason
+} from './source-control-commit-eligibility'
 import type { DropdownItem } from './source-control-dropdown-item-types'
 import type { DropdownActionContext } from './source-control-dropdown-action-context'
 
@@ -8,6 +12,29 @@ export type CommitDropdownItems = {
   commit: DropdownItem
   commitPush: DropdownItem
   commitSync: DropdownItem
+}
+
+// Eligibility compares the English reasons, so translate them only for display.
+function localizeCommitDisabledReason(reason: CommitDisabledReason | null): string | null {
+  switch (reason) {
+    case 'Resolve conflicts before committing':
+      return translate(
+        'auto.components.right.sidebar.source.control.primary.action.a6457b46a7',
+        'Resolve conflicts before committing'
+      )
+    case 'Stage at least one file to commit':
+      return translate(
+        'auto.components.right.sidebar.source.control.primary.action.fa3bd4f40c',
+        'Stage at least one file to commit'
+      )
+    case COMMIT_MESSAGE_REQUIRED_REASON:
+      return translate(
+        'auto.components.right.sidebar.source.control.primary.action.f01f16d77f',
+        'Enter a commit message to commit'
+      )
+    case null:
+      return null
+  }
 }
 
 export function buildCommitDropdownItems(ctx: DropdownActionContext): CommitDropdownItems {
@@ -26,6 +53,7 @@ export function buildCommitDropdownItems(ctx: DropdownActionContext): CommitDrop
     commitDisabledReason,
     canCommit
   } = ctx
+  const commitDisabledTitle = localizeCommitDisabledReason(commitDisabledReason)
 
   const commit: DropdownItem = {
     kind: 'commit',
@@ -33,32 +61,83 @@ export function buildCommitDropdownItems(ctx: DropdownActionContext): CommitDrop
       'auto.components.right.sidebar.source.control.dropdown.items.2b8e6595fd',
       'Commit'
     ),
-    title: commitDisabledReason ?? 'Commit staged changes',
+    title:
+      commitDisabledTitle ??
+      translate(
+        'auto.components.right.sidebar.source.control.primary.action.ab41fb926b',
+        'Commit staged changes'
+      ),
     disabled: !canCommit
   }
 
   // Committing changes divergence, so compound labels must omit pre-commit counts.
-  const commitPushTitle = upstreamLoading
-    ? 'Checking branch status…'
-    : publishBlockedByPRLoading
-      ? 'Checking PR status…'
-      : publishBlockedByMergedPR
-        ? 'PR is already merged'
-        : publishBlockedByDetachedHead
-          ? 'Check out a branch before pushing commits'
-          : pushBlockedByOpenHostedReviewTarget
-            ? 'Linked review branch target is unavailable'
-            : !hasUpstream && !(hasOpenHostedReview && canPushLinkedReviewWithoutUpstream)
-              ? 'Publish the branch first to push commits'
-              : (commitDisabledReason ??
-                (shouldForcePushWithLease
-                  ? 'Commit staged changes and force push with lease'
-                  : behind > 0
-                    ? 'Commit staged changes and try to push'
-                    : 'Commit staged changes and push'))
+  const commitPushTitle = ((): string => {
+    if (upstreamLoading) {
+      return translate(
+        'auto.components.right.sidebar.source.control.dropdown.items.checkingBranchStatus',
+        'Checking branch status…'
+      )
+    }
+    if (publishBlockedByPRLoading) {
+      return translate(
+        'auto.components.right.sidebar.source.control.dropdown.items.titleCheckingPrStatus',
+        'Checking PR status…'
+      )
+    }
+    if (publishBlockedByMergedPR) {
+      return translate(
+        'auto.components.right.sidebar.source.control.dropdown.items.titlePrAlreadyMerged',
+        'PR is already merged'
+      )
+    }
+    if (publishBlockedByDetachedHead) {
+      return translate(
+        'auto.components.right.sidebar.source.control.dropdown.items.titleCheckOutBranchToPush',
+        'Check out a branch before pushing commits'
+      )
+    }
+    if (pushBlockedByOpenHostedReviewTarget) {
+      return translate(
+        'auto.components.right.sidebar.source.control.dropdown.items.titleLinkedReviewTargetUnavailable',
+        'Linked review branch target is unavailable'
+      )
+    }
+    if (!hasUpstream && !(hasOpenHostedReview && canPushLinkedReviewWithoutUpstream)) {
+      return translate(
+        'auto.components.right.sidebar.source.control.dropdown.items.titlePublishBranchFirstToPush',
+        'Publish the branch first to push commits'
+      )
+    }
+    if (commitDisabledTitle !== null) {
+      return commitDisabledTitle
+    }
+    if (shouldForcePushWithLease) {
+      return translate(
+        'auto.components.right.sidebar.source.control.dropdown.items.titleCommitAndForcePush',
+        'Commit staged changes and force push with lease'
+      )
+    }
+    return behind > 0
+      ? translate(
+          'auto.components.right.sidebar.source.control.dropdown.items.titleCommitAndTryPush',
+          'Commit staged changes and try to push'
+        )
+      : translate(
+          'auto.components.right.sidebar.source.control.dropdown.items.titleCommitAndPush',
+          'Commit staged changes and push'
+        )
+  })()
   const commitPush: DropdownItem = {
     kind: 'commit_push',
-    label: shouldForcePushWithLease ? 'Commit & Force Push' : 'Commit & Push',
+    label: shouldForcePushWithLease
+      ? translate(
+          'auto.components.right.sidebar.source.control.dropdown.items.commitForcePush',
+          'Commit & Force Push'
+        )
+      : translate(
+          'auto.components.right.sidebar.source.control.dropdown.items.commitPush',
+          'Commit & Push'
+        ),
     title: commitPushTitle,
     // Match Push: without upstream, Commit & Push requires a known open-review head.
     disabled:
@@ -105,7 +184,7 @@ export function buildCommitDropdownItems(ctx: DropdownActionContext): CommitDrop
     }
     if (shouldForcePushWithLease) {
       return (
-        commitDisabledReason ??
+        commitDisabledTitle ??
         translate(
           'auto.components.right.sidebar.source.control.dropdown.items.titleUseForcePush',
           'Use Commit & Force Push — remote only has older copies of local commits'
@@ -113,7 +192,7 @@ export function buildCommitDropdownItems(ctx: DropdownActionContext): CommitDrop
       )
     }
     return (
-      commitDisabledReason ??
+      commitDisabledTitle ??
       translate(
         'auto.components.right.sidebar.source.control.dropdown.items.titleCommitThenPullPush',
         'Commit, then pull and push'

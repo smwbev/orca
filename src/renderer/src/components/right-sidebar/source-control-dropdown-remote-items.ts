@@ -2,16 +2,18 @@ import { translate } from '@/i18n/i18n'
 import type { DropdownItem } from './source-control-dropdown-item-types'
 import type { DropdownActionContext } from './source-control-dropdown-action-context'
 import {
-  describeFastForwardCount,
-  describePullCount,
-  describePushCount,
-  describeSyncCounts,
   formatCountLabel,
-  formatManualForcePushTitle,
   formatRebaseBaseRef,
-  formatSyncLabel,
-  formatUnpublishedForcePushTitle
+  formatSyncLabel
 } from './source-control-dropdown-labels'
+import {
+  resolveFastForwardTitle,
+  resolveForcePushTitle,
+  resolvePublishTitle,
+  resolvePullTitle,
+  resolvePushTitle,
+  resolveSyncTitle
+} from './source-control-dropdown-remote-titles'
 
 export type RemoteDropdownItems = {
   push: DropdownItem
@@ -26,15 +28,11 @@ export type RemoteDropdownItems = {
 
 export function buildRemoteDropdownItems(ctx: DropdownActionContext): RemoteDropdownItems {
   const {
-    upstreamStatus,
-    branchCommitsAhead,
-    canPushLinkedReviewWithoutUpstream,
     rebaseBaseRef,
     hasDirtyLocalChanges,
     globalBusy,
     upstreamLoading,
     hasUpstream,
-    canPushUntrackedHostedReview,
     pushBlockedByOpenHostedReviewTarget,
     publishBlockedByMergedPR,
     publishBlockedByPRLoading,
@@ -43,116 +41,65 @@ export function buildRemoteDropdownItems(ctx: DropdownActionContext): RemoteDrop
     ahead,
     behind,
     shouldForcePushWithLease,
-    pushLabelCount,
-    forcePushTitle
+    pushLabelCount
   } = ctx
 
   const push: DropdownItem = {
     kind: 'push',
-    label: formatCountLabel('Push', ahead),
-    title: publishBlockedByDetachedHead
-      ? 'Check out a branch before pushing commits'
-      : pushBlockedByOpenHostedReviewTarget
-        ? 'Linked review branch target is unavailable'
-        : upstreamLoading
-          ? 'Push this branch and set an upstream if needed'
-          : canPushUntrackedHostedReview
-            ? 'Push updates to the linked review branch'
-            : !hasUpstream
-              ? 'Push this branch and set an upstream if needed'
-              : shouldForcePushWithLease
-                ? 'Try a regular push; git may require force push'
-                : behind > 0 && ahead > 0
-                  ? 'Push local commits; git may require syncing first'
-                  : ahead === 0
-                    ? `Nothing to push${upstreamStatus?.upstreamName ? ` to ${upstreamStatus.upstreamName}` : ''}`
-                    : describePushCount(ahead),
+    label: formatCountLabel(
+      translate('auto.components.right.sidebar.source.control.primary.action.95550cff15', 'Push'),
+      ahead
+    ),
+    title: resolvePushTitle(ctx),
     // Push can set upstream and coexist with force-with-lease; detached HEAD and unknown review targets still block it.
     disabled: globalBusy || publishBlockedByDetachedHead || pushBlockedByOpenHostedReviewTarget
   }
 
   const forcePush: DropdownItem = {
     kind: 'force_push',
-    label: formatCountLabel('Force Push', pushLabelCount),
-    title: publishBlockedByDetachedHead
-      ? 'Check out a branch before force pushing commits'
-      : pushBlockedByOpenHostedReviewTarget
-        ? 'Linked review branch target is unavailable'
-        : upstreamLoading
-          ? formatUnpublishedForcePushTitle(branchCommitsAhead)
-          : !hasUpstream
-            ? formatUnpublishedForcePushTitle(branchCommitsAhead)
-            : pushLabelCount === 0
-              ? `Nothing to force push${upstreamStatus?.upstreamName ? ` to ${upstreamStatus.upstreamName}` : ''}`
-              : shouldForcePushWithLease
-                ? forcePushTitle
-                : formatManualForcePushTitle(pushLabelCount, behind, upstreamStatus?.upstreamName),
+    label: formatCountLabel(
+      translate(
+        'auto.components.right.sidebar.source.control.primary.action.390abeab93',
+        'Force Push'
+      ),
+      pushLabelCount
+    ),
+    title: resolveForcePushTitle(ctx),
     // Match Push target safety; force-with-lease must not push the wrong review head.
     disabled: globalBusy || publishBlockedByDetachedHead || pushBlockedByOpenHostedReviewTarget
   }
 
   const pull: DropdownItem = {
     kind: 'pull',
-    label: formatCountLabel('Pull', behind),
-    title: upstreamLoading
-      ? 'Checking branch status…'
-      : publishBlockedByPRLoading
-        ? 'Checking PR status…'
-        : publishBlockedByMergedPR
-          ? 'PR is already merged'
-          : publishBlockedByDetachedHead
-            ? 'Check out a branch before pulling commits'
-            : !hasUpstream
-              ? 'Publish the branch first to pull commits'
-              : shouldForcePushWithLease
-                ? 'Nothing new to pull — remote only has older copies of local commits'
-                : behind === 0
-                  ? 'Nothing to pull'
-                  : describePullCount(behind),
+    label: formatCountLabel(
+      translate('auto.components.right.sidebar.source.control.primary.action.d64292a938', 'Pull'),
+      behind
+    ),
+    title: resolvePullTitle(ctx),
     disabled: globalBusy || upstreamLoading || !hasUpstream || publishBlockedByDetachedHead
   }
 
   const fastForward: DropdownItem = {
     kind: 'fast_forward',
-    label: formatCountLabel('Fast-forward', behind),
-    title: upstreamLoading
-      ? 'Checking branch status…'
-      : publishBlockedByPRLoading
-        ? 'Checking PR status…'
-        : publishBlockedByMergedPR
-          ? 'PR is already merged'
-          : publishBlockedByDetachedHead
-            ? 'Check out a branch before fast-forwarding'
-            : !hasUpstream
-              ? 'Publish the branch first to fast-forward'
-              : shouldForcePushWithLease
-                ? 'Nothing new to fast-forward — remote only has older copies of local commits'
-                : behind === 0
-                  ? 'Nothing to fast-forward'
-                  : ahead > 0
-                    ? 'Try a fast-forward pull; git may reject local commits'
-                    : describeFastForwardCount(behind),
+    label: formatCountLabel(
+      translate(
+        'auto.components.right.sidebar.source.control.dropdown.items.fastForward',
+        'Fast-forward'
+      ),
+      behind
+    ),
+    title: resolveFastForwardTitle(ctx),
     disabled: globalBusy || upstreamLoading || !hasUpstream || publishBlockedByDetachedHead
   }
 
   const sync: DropdownItem = {
     kind: 'sync',
-    label: formatSyncLabel('Sync', ahead, behind),
-    title: upstreamLoading
-      ? 'Checking branch status…'
-      : publishBlockedByPRLoading
-        ? 'Checking PR status…'
-        : publishBlockedByMergedPR
-          ? 'PR is already merged'
-          : publishBlockedByDetachedHead
-            ? 'Check out a branch before syncing commits'
-            : !hasUpstream
-              ? 'Publish the branch first to sync commits'
-              : shouldForcePushWithLease
-                ? 'Use Force Push — remote only has older copies of local commits'
-                : ahead === 0 && behind === 0
-                  ? 'Branch is up to date'
-                  : describeSyncCounts(ahead, behind),
+    label: formatSyncLabel(
+      translate('auto.components.right.sidebar.source.control.primary.action.795f1509c5', 'Sync'),
+      ahead,
+      behind
+    ),
+    title: resolveSyncTitle(ctx),
     disabled:
       globalBusy ||
       upstreamLoading ||
@@ -214,27 +161,25 @@ export function buildRemoteDropdownItems(ctx: DropdownActionContext): RemoteDrop
     kind: 'publish',
     label:
       publishBlockedByMergedPR || publishBlockedByPRLoading
-        ? 'PR Status'
+        ? translate(
+            'auto.components.right.sidebar.source.control.dropdown.items.publishPrStatus',
+            'PR Status'
+          )
         : publishBlockedByOpenHostedReview
-          ? 'Linked Review'
+          ? translate(
+              'auto.components.right.sidebar.source.control.dropdown.items.publishLinkedReview',
+              'Linked Review'
+            )
           : publishBlockedByDetachedHead
-            ? 'No Branch'
-            : 'Publish Branch',
-    title: upstreamLoading
-      ? 'Checking branch status…'
-      : publishBlockedByPRLoading
-        ? 'Checking PR status…'
-        : publishBlockedByMergedPR
-          ? 'PR is already merged'
-          : publishBlockedByOpenHostedReview
-            ? canPushLinkedReviewWithoutUpstream
-              ? 'Linked review branch already exists'
-              : 'Linked review branch target is unavailable'
-            : publishBlockedByDetachedHead
-              ? 'Check out a branch before publishing commits'
-              : hasUpstream
-                ? 'Branch is already published'
-                : 'Publish this branch to origin',
+            ? translate(
+                'auto.components.right.sidebar.source.control.dropdown.items.publishNoBranch',
+                'No Branch'
+              )
+            : translate(
+                'auto.components.right.sidebar.source.control.primary.action.7b4d02e6b8',
+                'Publish Branch'
+              ),
+    title: resolvePublishTitle(ctx),
     disabled:
       globalBusy ||
       upstreamLoading ||

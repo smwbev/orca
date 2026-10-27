@@ -723,6 +723,33 @@ describe('resolveDropdownItems', () => {
       await i18n.changeLanguage('en')
     }
   })
+
+  it('routes the conflict and commit-message blockers through the active locale', async () => {
+    await i18n.changeLanguage(PSEUDO_LOCALIZATION_LOCALE)
+    try {
+      const cases: [Partial<DropdownActionInputs>, string][] = [
+        [
+          { stagedCount: 1, hasMessage: true, hasUnresolvedConflicts: true },
+          '[Resolve conflicts before committing]'
+        ],
+        [{ stagedCount: 1, hasMessage: false }, '[Enter a commit message to commit]']
+      ]
+      for (const [overrides, title] of cases) {
+        const byKind = Object.fromEntries(
+          resolveDropdownItems(
+            inputs({ ...overrides, upstreamStatus: { hasUpstream: true, ahead: 0, behind: 0 } })
+          )
+            .filter((e) => e.kind !== 'separator')
+            .map((e) => [e.kind, e])
+        )
+        for (const kind of ['commit', 'commit_push', 'commit_sync']) {
+          expect(byKind[kind].title).toBe(title)
+        }
+      }
+    } finally {
+      await i18n.changeLanguage('en')
+    }
+  })
 })
 
 // Exercise the real push-target resolution chain used by the component (#8196).

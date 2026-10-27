@@ -19,14 +19,14 @@ import type {
   NativeChatToolCallBlock
 } from '../../../../../src/shared/native-chat-types'
 import { MobileSourceCopyButton } from '../../../components/MobileSourceCopyButton'
-import { nativeChatMessagePlainText } from './mobile-native-chat-message-plain-text'
+import { nativeChatMessageCopyText } from '../../../../../src/shared/native-chat-message-copy-text'
 import { deriveNativeChatRowContent } from '../../../../../src/shared/native-chat-row-content'
 import {
   MobileNativeChatGroupedThought,
   MobileNativeChatReasoningRow
 } from './MobileNativeChatReasoningRow'
 import { mobileNativeChatRowId } from '../../mobile-native-chat-reading-place'
-import { nativeChatWorkRunEntries } from '../../../../../src/shared/native-chat-work-run'
+import { nativeChatWorkRunEntries } from '../../../../../src/shared/native-chat/native-chat-work-run'
 import { nativeChatReasoningDisclosureKey } from '../../../../../src/shared/native-chat-reasoning-row'
 import { MobileNativeChatTurnStatus } from './MobileNativeChatTurnStatus'
 import { MobileNativeChatNoticeRow } from './MobileNativeChatNoticeRow'
@@ -47,6 +47,7 @@ import { styles } from './mobile-native-chat-message-styles'
 import { agentMessageAttribution } from '../../mobile-agent-message-attribution'
 import { MobileNativeChatVisualContext } from '../visual/mobile-native-chat-visual-context'
 import { useMobileNativeChatFullMessage } from '../../MobileNativeChatFullContent'
+import { useMobileColorScheme } from '../../../theme/use-mobile-color-scheme'
 import { MobileNativeChatPacedProse } from './MobileNativeChatPacedProse'
 import { Prose } from './MobileNativeChatProse'
 
@@ -118,6 +119,7 @@ function MobileNativeChatMessageImpl({
   userMessageOpen?: boolean
   onToggleUserMessage?: (messageId: string) => void
 }): React.JSX.Element {
+  useMobileColorScheme()
   const { shown: message, showFull, recovery } = useMobileNativeChatFullMessage(rowMessage)
   const attribution = agentMessageAttribution('Message from', message.from)
   const isUser = message.role === 'user' && attribution === null
@@ -232,7 +234,7 @@ function MobileNativeChatMessageImpl({
     )
   }
   const isChatTurn = message.role === 'user' || message.role === 'assistant'
-  const copyText = isChatTurn ? nativeChatMessagePlainText(message) : ''
+  const copyText = isChatTurn ? nativeChatMessageCopyText(message) : ''
   const proseRow = (block: NativeChatBlock, index: number, text: string, revealing = false) =>
     isSubagentGroupBlock(block) && isRenderableSubagentGroup(block) ? (
       <MobileNativeChatSubagentGroup
@@ -245,7 +247,7 @@ function MobileNativeChatMessageImpl({
       <Prose
         key={index}
         block={block}
-        invert={isUser}
+        userMessage={isUser}
         fontScale={fontScale}
         onOpenFile={onOpenFile}
         onLongPress={onLongPress}

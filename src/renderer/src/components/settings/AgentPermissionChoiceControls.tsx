@@ -5,6 +5,7 @@ import type { AgentPermissionChoice } from '../../../../shared/tui-agent-permiss
 import { translate } from '@/i18n/i18n'
 import { cn } from '@/lib/utils'
 import { Button } from '../ui/button'
+import { Label } from '../ui/label'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,20 +40,27 @@ export function agentPermissionChoiceLabel(
     : translate('settings.agents.permissionOwnAll', "Agents' own settings")
 }
 
-// Temporary copy until chats can run an agent's own settings: until then they keep Settings → Chat.
-function ownDescription(): string {
+function ownDescription(chatOwnSupported: boolean): string {
+  if (!chatOwnSupported) {
+    return translate(
+      'settings.agents.permissionOwnLegacyDescription',
+      'Orca adds no permission flag in terminals; chats use Settings → Chat.'
+    )
+  }
   return translate(
     'settings.agents.permissionOwnDescription',
-    'Orca adds no permission flag in terminals; chats use Settings → Chat.'
+    'Terminals and chats follow the agent’s own permission settings.'
   )
 }
 
 export function AllAgentsPermissionSetting({
+  chatOwnSupported = false,
   choice,
   withoutAutoChoice,
   onChange,
   onChangeWithoutAuto
 }: {
+  chatOwnSupported?: boolean
   choice: AgentPermissionChoice | null
   /** What the agents without Approve for me share; null when they differ. */
   withoutAutoChoice: AgentPermissionChoice | null
@@ -101,10 +109,7 @@ export function AllAgentsPermissionSetting({
                     {ownLabel}
                   </span>
                   <div className="text-xs font-normal text-muted-foreground">
-                    {translate(
-                      'settings.agents.permissionEachOwnDescription',
-                      'Orca adds nothing; each CLI uses its own config'
-                    )}
+                    {ownDescription(chatOwnSupported)}
                   </div>
                 </div>
               </DropdownMenuRadioItem>
@@ -116,12 +121,6 @@ export function AllAgentsPermissionSetting({
         {translate(
           'settings.agents.permissionsChoiceExplanation',
           'What every agent may do without asking. You can set one agent differently below.'
-        )}
-      </p>
-      <p className="text-xs text-muted-foreground">
-        {translate(
-          'settings.agents.permissionsResetExplanation',
-          'Picking a mode here resets agents you set separately.'
         )}
       </p>
       <div className="min-h-6">
@@ -158,6 +157,7 @@ export function AllAgentsPermissionSetting({
 }
 
 export type AgentPermissionChoiceRow = {
+  chatOwnSupported?: boolean
   choices: readonly AgentPermissionChoice[]
   choice: AgentPermissionChoice
   source: 'agent' | 'all'
@@ -175,31 +175,53 @@ export type AgentPermissionChoiceRow = {
 export function AgentPermissionMenu({
   agentId,
   label,
-  permission
+  permission,
+  inheritLabel,
+  disabled,
+  size = 'xs',
+  layout = 'inline'
 }: {
   agentId: string
   label: string
   permission: AgentPermissionChoiceRow
+  inheritLabel?: string
+  disabled?: boolean
+  size?: 'xs' | 'sm'
+  layout?: 'inline' | 'stacked'
 }): React.JSX.Element {
-  const followAll = translate('settings.agents.permissionSameAsAll', 'Same as all agents')
+  const followAll =
+    inheritLabel ?? translate('settings.agents.permissionSameAsAll', 'Same as all agents')
   const current = agentPermissionChoiceLabel(permission.choice, label)
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-      <span className="text-xs font-medium">
-        {translate('settings.agents.rowPermissions', 'Permissions')}
-      </span>
+    <div
+      className={cn(
+        'flex min-w-0',
+        layout === 'stacked'
+          ? 'flex-col items-stretch gap-2'
+          : 'flex-wrap items-center gap-x-3 gap-y-1'
+      )}
+    >
+      {layout === 'stacked' ? (
+        <Label variant="settings">
+          {translate('settings.agents.rowPermissions', 'Permissions')}
+        </Label>
+      ) : (
+        <span className="text-xs font-medium">
+          {translate('settings.agents.rowPermissions', 'Permissions')}
+        </span>
+      )}
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger asChild disabled={disabled}>
           <Button
             type="button"
             variant="outline"
-            size="xs"
+            size={size}
             aria-label={translate('settings.agents.rowPermissionsLabel', '{{agent}} permissions', {
               agent: label
             })}
-            className="max-w-full"
+            className={cn('min-w-0 max-w-full', layout === 'stacked' && 'w-full justify-between')}
           >
-            <span className="truncate">
+            <span className="truncate text-xs">
               {permission.source === 'all' ? `${followAll} · ${current}` : current}
             </span>
             <ChevronDown className="size-3 shrink-0" />
@@ -209,7 +231,11 @@ export function AgentPermissionMenu({
           <DropdownMenuRadioGroup
             value={permission.source === 'all' ? 'default' : permission.choice}
           >
-            <DropdownMenuRadioItem value="default" onSelect={() => permission.onSelect('default')}>
+            <DropdownMenuRadioItem
+              value="default"
+              disabled={disabled}
+              onSelect={() => permission.onSelect('default')}
+            >
               <span className="truncate">
                 {followAll} · {agentPermissionChoiceLabel(permission.defaultChoice, label)}
               </span>
@@ -219,6 +245,7 @@ export function AgentPermissionMenu({
               <DropdownMenuRadioItem
                 key={choice}
                 value={choice}
+                disabled={disabled}
                 onSelect={() => permission.onSelect(choice)}
               >
                 <div className="min-w-0 py-0.5">
@@ -227,7 +254,7 @@ export function AgentPermissionMenu({
                   </div>
                   <div className="text-xs font-normal text-muted-foreground">
                     {choice === 'own'
-                      ? ownDescription()
+                      ? ownDescription(permission.chatOwnSupported === true)
                       : nativeChatPermissionModeDescription(choice, agentId)}
                   </div>
                 </div>
@@ -280,7 +307,13 @@ export function AgentPermissionArgsChip({
             onKeyDown={(event) => {
               if (event.key === 'Backspace') {
                 event.preventDefault()
-                if (!event.repeat && !event.altKey && !event.ctrlKey && !event.metaKey) {
+                if (
+                  !disabled &&
+                  !event.repeat &&
+                  !event.altKey &&
+                  !event.ctrlKey &&
+                  !event.metaKey
+                ) {
                   onRemove()
                 }
               }

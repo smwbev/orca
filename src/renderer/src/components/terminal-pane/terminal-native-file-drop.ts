@@ -205,12 +205,12 @@ async function uploadRemoteDropPaths(
   const pending = toast.loading(
     args.dataPaths.length === 1
       ? translate(
-          'auto.components.terminal.pane.terminal.drop.handler.uploadingFileSingular',
+          'auto.components.terminal.pane.terminal.drop.handler.uploadingFileToRemoteSingular',
           'Uploading {{count}} file to remote…',
           { count: args.dataPaths.length }
         )
       : translate(
-          'auto.components.terminal.pane.terminal.drop.handler.uploadingFilePlural',
+          'auto.components.terminal.pane.terminal.drop.handler.uploadingFileToRemotePlural',
           'Uploading {{count}} files to remote…',
           { count: args.dataPaths.length }
         )

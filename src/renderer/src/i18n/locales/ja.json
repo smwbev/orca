@@ -3508,7 +3508,9 @@
                 "skippedSymlinkSingular": "{{count}} シンボリックリンク をスキップしました。",
                 "skippedSymlinkPlural": "{{count}} シンボリックリンク をスキップしました。",
                 "uploadingFileSingular": "{{count}} ファイル をランタイムにアップロードしています…",
-                "uploadingFilePlural": "{{count}} ファイル をランタイムにアップロードしています…"
+                "uploadingFilePlural": "{{count}} ファイル をランタイムにアップロードしています…",
+                "uploadingFileToRemoteSingular": "{{count}} 個のファイルをリモートホストにアップロードしています…",
+                "uploadingFileToRemotePlural": "{{count}} 個のファイルをリモートホストにアップロードしています…"
               }
             }
           },

@@ -30,8 +30,6 @@ const REACTION_LABEL: Record<GitHubReactionContent, string> = {
   eyes: 'eyes'
 }
 
-// Why whole sentences per count: the plural ending used to travel as an
-// interpolation value, which glued an English "s" onto translated nouns.
 function reactionCountLabel(count: number, reaction: string): string {
   return count === 1
     ? translate(

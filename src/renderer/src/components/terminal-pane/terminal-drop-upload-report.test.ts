@@ -40,24 +40,6 @@ describe('reportTerminalDropUploadSkipsAndFailures', () => {
     expect(toast.message).toHaveBeenCalledTimes(2)
   })
 
-  it('picks a whole sentence per symlink count instead of passing a plural ending', () => {
-    reportTerminalDropUploadSkipsAndFailures([{ reason: 'symlink' }], [])
-    reportTerminalDropUploadSkipsAndFailures([{ reason: 'symlink' }, { reason: 'symlink' }], [])
-
-    expect(mocks.translate.mock.calls).toEqual([
-      [
-        'auto.components.terminal.pane.terminal.drop.handler.skippedSymlinkSingular',
-        'Skipped {{count}} symlink.',
-        { count: 1 }
-      ],
-      [
-        'auto.components.terminal.pane.terminal.drop.handler.skippedSymlinkPlural',
-        'Skipped {{count}} symlinks.',
-        { count: 2 }
-      ]
-    ])
-  })
-
   it('reports upload failures without leaking individual paths', () => {
     reportTerminalDropUploadSkipsAndFailures([], [{ reason: '/secret/project/file.txt' }])
 

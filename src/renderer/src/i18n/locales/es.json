@@ -3523,7 +3523,9 @@
                 "skippedSymlinkSingular": "Se omitió {{count}} symlink.",
                 "skippedSymlinkPlural": "Se omitieron {{count}} symlinks.",
                 "uploadingFileSingular": "Subiendo {{count}} archivo al host…",
-                "uploadingFilePlural": "Subiendo {{count}} archivos al host…"
+                "uploadingFilePlural": "Subiendo {{count}} archivos al host…",
+                "uploadingFileToRemoteSingular": "Subiendo {{count}} archivo al host remoto…",
+                "uploadingFileToRemotePlural": "Subiendo {{count}} archivos al host remoto…"
               }
             }
           },

@@ -3508,7 +3508,9 @@
                 "skippedSymlinkSingular": "跳过 {{count}} 符号链接。",
                 "skippedSymlinkPlural": "跳过 {{count}} 符号链接。",
                 "uploadingFileSingular": "正在上传 {{count}} 文件 到运行时...",
-                "uploadingFilePlural": "正在上传 {{count}} 文件 到运行时..."
+                "uploadingFilePlural": "正在上传 {{count}} 文件 到运行时...",
+                "uploadingFileToRemoteSingular": "正在将 {{count}} 个文件上传到远程主机…",
+                "uploadingFileToRemotePlural": "正在将 {{count}} 个文件上传到远程主机…"
               }
             }
           },

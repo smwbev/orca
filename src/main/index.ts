@@ -10,6 +10,8 @@ import {
 import { openMainWindow as openMainWindowController } from './startup/main-window-controller'
 import { mainProcessState as state } from './startup/main-process-state'
 import { runMainProcessPreflight } from './startup/main-process-preflight'
+import { runWslHolderUninstallPreflight } from './startup/wsl-holder-uninstall-preflight'
+import { enableLinearRegexpFallback } from './startup/linear-regexp-fallback'
 import { registerMainProcessIpcHandlers } from './startup/main-process-ipc-bootstrap'
 import { initializeMainProcessReady } from './startup/main-process-ready'
 import { installMainProcessQuitHandlers } from './startup/main-process-quit'
@@ -97,13 +99,17 @@ const handleMacAppActivation = createMacAppActivationHandler({
   requestActivation: requestDesktopActivation
 })
 
-const preflightReady = runMainProcessPreflight({
-  focusExistingWindow,
-  requestDesktopActivation
-})
+// The uninstaller's holder release runs instead of the app, never alongside it.
+const preflightReady =
+  !runWslHolderUninstallPreflight() &&
+  runMainProcessPreflight({
+    focusExistingWindow,
+    requestDesktopActivation
+  })
 
 // Skip userData writes after losing the single-instance lock.
 if (preflightReady) {
+  enableLinearRegexpFallback()
   void leaseAppImageGenerationForCurrentProcess()
   // Why this early: a cold distro takes seconds to boot; starting now overlaps it with app startup.
   if (process.platform === 'win32' && wslHostsGateOpen()) {

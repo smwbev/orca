@@ -13,8 +13,12 @@ import { getLocalizedConflictKindLabel } from './conflict-label'
 import { DiffLineCounts } from './diff-line-counts'
 import { reviewNoteCountTitle } from './review-note-count-title'
 import { SourceControlEntryContextMenu } from './entry-context-menu'
-import { canDiscardStatusEntry, canStageStatusEntry, canUnstageStatusEntry } from './entry-actions'
-import { isSubmoduleWorktreeOnlyChange } from '../commit/discard-all-sequence'
+import {
+  canDiscardStatusEntry,
+  canStageStatusEntry,
+  canUnstageStatusEntry
+} from '../../../../../../shared/source-control-entry-actions'
+import { isSubmoduleWorktreeOnlyChange } from '../../../../../../shared/source-control-discard-all-sequence'
 import { toPermanentSourceControlRowOpenEvent, type SourceControlRowOpenEvent } from './split-open'
 import {
   SOURCE_CONTROL_ROW_ACTION_OVERLAY_CLASS,

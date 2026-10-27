@@ -1,4 +1,4 @@
-import type { TaskPageComposerActionsModel } from '../../use-task-page-composer-actions'
+import type { TaskPageComposerActionsModel } from '../use-task-page-composer-actions'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { translate } from '@/i18n/i18n'
 import { linearLabelCountLabel } from './linear-attribute-count-labels'
@@ -29,7 +29,6 @@ export function TaskPageLinearIssueAttributes({
   } = model
   return (
     <div className="flex flex-wrap items-center gap-2 border-t border-border/40 pt-4 mt-2">
-      {/* Status Selector */}
       <Popover>
         <PopoverTrigger asChild>
           <button
@@ -91,7 +90,6 @@ export function TaskPageLinearIssueAttributes({
         </PopoverContent>
       </Popover>
 
-      {/* Assignee Selector */}
       <Popover>
         <PopoverTrigger asChild>
           <button
@@ -179,7 +177,6 @@ export function TaskPageLinearIssueAttributes({
         </PopoverContent>
       </Popover>
 
-      {/* Priority Selector */}
       <Popover>
         <PopoverTrigger asChild>
           <button
@@ -244,7 +241,6 @@ export function TaskPageLinearIssueAttributes({
         </PopoverContent>
       </Popover>
 
-      {/* Project Selector */}
       <Popover>
         <PopoverTrigger asChild>
           <button
@@ -304,7 +300,6 @@ export function TaskPageLinearIssueAttributes({
         </PopoverContent>
       </Popover>
 
-      {/* Labels Selector */}
       <Popover>
         <PopoverTrigger asChild>
           <button

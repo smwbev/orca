@@ -1619,8 +1619,8 @@
         "09d67a0f9b": "PR をクローズできませんでした",
         "88809e79db": "PR の再開に失敗しました",
         "00f55cc17b": "この PR ではリポジトリにアクセスできません。",
-        "reactionCountSingular": "{{count}} {{reaction}} 反応",
-        "reactionCountPlural": "{{count}} {{reaction}} 反応"
+        "reactionCountSingular": "{{reaction}} 反応 {{count}} 件",
+        "reactionCountPlural": "{{reaction}} 反応 {{count}} 件"
       },
       "GitLabItemDialog": {
         "65e784c1f1": "再度開く",
@@ -1686,8 +1686,8 @@
         "4168eb2c51": "解決",
         "commentTooLarge": "コメントが大きすぎるため安全に送信できません。",
         "gitlabActionFailed": "GitLab 操作が失敗しました。",
-        "approvalsRemainingSingular": "{{count}} 承認 残り",
-        "approvalsRemainingPlural": "{{count}} 承認 残り"
+        "approvalsRemainingSingular": "残り {{count}} 件の承認",
+        "approvalsRemainingPlural": "残り {{count}} 件の承認"
       },
       "JiraIssueWorkspace": {
         "b0b92666c9": "コメント",
@@ -2508,10 +2508,10 @@
         "jiraColumnOriginalEstimate": "見積もり",
         "jiraColumnRemainingEstimate": "残り",
         "jiraBoardEmptyColumn": "Issue はありません",
-        "labelCountPlural": "{{count}} ラベル",
-        "labelCountSingular": "{{count}} ラベル",
-        "memberCountPlural": "{{count}} メンバー",
-        "memberCountSingular": "{{count}} メンバー"
+        "labelCountPlural": "{{count}} 個のラベル",
+        "labelCountSingular": "{{count}} 個のラベル",
+        "memberCountPlural": "{{count}} 人のメンバー",
+        "memberCountSingular": "{{count}} 人のメンバー"
       },
       "Terminal": {
         "73768427cf": "閉じる",
@@ -3505,10 +3505,10 @@
                 "b4cf68e889": "{{value0}} {{value1}} をスキップしました。",
                 "writeTimeout": "ファイルドロップをキャンセルしました: 安全タイムアウト前にターミナルがパスを受け付けませんでした。",
                 "writeRejected": "ファイルドロップをキャンセルしました: ターミナルがパスを受け付けられませんでした。",
-                "skippedSymlinkSingular": "{{count}} シンボリックリンク をスキップしました。",
-                "skippedSymlinkPlural": "{{count}} シンボリックリンク をスキップしました。",
-                "uploadingFileSingular": "{{count}} ファイル をランタイムにアップロードしています…",
-                "uploadingFilePlural": "{{count}} ファイル をランタイムにアップロードしています…",
+                "skippedSymlinkSingular": "{{count}} 個のシンボリックリンクをスキップしました。",
+                "skippedSymlinkPlural": "{{count}} 個のシンボリックリンクをスキップしました。",
+                "uploadingFileSingular": "{{count}} 個のファイルをランタイムにアップロードしています…",
+                "uploadingFilePlural": "{{count}} 個のファイルをランタイムにアップロードしています…",
                 "uploadingFileToRemoteSingular": "{{count}} 個のファイルをリモートホストにアップロードしています…",
                 "uploadingFileToRemotePlural": "{{count}} 個のファイルをリモートホストにアップロードしています…"
               }
@@ -6656,8 +6656,8 @@
           "sshConfigPickerRetry": "再試行",
           "sshConfigPickerResolving": "読む…",
           "pairingHelpShareComputer": "もう一方のコンピューターで「設定 → リモート Orca サーバー → このコンピューターを共有」から作成します。",
-          "sshImportSyncedPlural": "{{count}} ホスト を同期しました。",
-          "sshImportSyncedSingular": "{{count}} ホスト を同期しました。"
+          "sshImportSyncedPlural": "{{count}} 個のホストを Orca に追加しました。",
+          "sshImportSyncedSingular": "{{count}} 個のホストを Orca に追加しました。"
         },
         "ForgetSshWorkspaceDialog": {
           "reconnectFailed": "再接続に失敗しました",
@@ -13774,10 +13774,10 @@
             "entryDeleteFailed": "「{{value0}}」を削除できませんでした",
             "entryFailedInWorkspace": "{{value0}} の {{value1}}",
             "diffCommentNotesCopyFailed": "メモのコピーに失敗しました",
-            "discardFailedSingular": "{{count}} ファイル を破棄できませんでした",
-            "discardFailedPlural": "{{count}} ファイル を破棄できませんでした",
-            "noteCountSingular": "{{count}} 注",
-            "noteCountPlural": "{{count}} 注"
+            "discardFailedSingular": "{{count}} 個のファイルを破棄できませんでした",
+            "discardFailedPlural": "{{count}} 個のファイルを破棄できませんでした",
+            "noteCountSingular": "メモ {{count}} 件",
+            "noteCountPlural": "メモ {{count}} 件"
           },
           "SourceControlAgentActionDialog": {
             "8e856842d1": "選択した Agent を開始できませんでした。",
@@ -14901,8 +14901,8 @@
           "d6e5dba05a": "サインイン",
           "0b4a7d23ab": "サインインする",
           "a74c6d6b18": "未インストール",
-          "linearWorkspacesLinkedSingular": "{{count}} ワークスペース がリンクされました。いつでも別のワークスペースを追加したり、制限付きキーを置き換えたりできます。",
-          "linearWorkspacesLinkedPlural": "{{count}} ワークスペース がリンクされました。いつでも別のワークスペースを追加したり、制限付きキーを置き換えたりできます。"
+          "linearWorkspacesLinkedSingular": "{{count}} 個のワークスペースがリンクされました。いつでも別のワークスペースを追加したり、制限付きキーを置き換えたりできます。",
+          "linearWorkspacesLinkedPlural": "{{count}} 個のワークスペースがリンクされました。いつでも別のワークスペースを追加したり、制限付きキーを置き換えたりできます。"
         },
         "NotificationStep": {
           "3bede04483": "テスト通知を送信する",

@@ -1619,8 +1619,8 @@
         "09d67a0f9b": "无法关闭拉取请求",
         "88809e79db": "无法重新提交拉取请求",
         "00f55cc17b": "此拉取请求无法访问存储库。",
-        "reactionCountSingular": "{{count}} {{reaction}} 反应",
-        "reactionCountPlural": "{{count}} {{reaction}} 反应"
+        "reactionCountSingular": "{{count}} 个 {{reaction}} 反应",
+        "reactionCountPlural": "{{count}} 个 {{reaction}} 反应"
       },
       "GitLabItemDialog": {
         "65e784c1f1": "重新打开",
@@ -1686,8 +1686,8 @@
         "4168eb2c51": "解决",
         "commentTooLarge": "评论过长，无法安全提交。",
         "gitlabActionFailed": "GitLab 操作失败。",
-        "approvalsRemainingSingular": "{{count}} 批准 剩余",
-        "approvalsRemainingPlural": "{{count}} 批准 剩余"
+        "approvalsRemainingSingular": "还需 {{count}} 个批准",
+        "approvalsRemainingPlural": "还需 {{count}} 个批准"
       },
       "JiraIssueWorkspace": {
         "b0b92666c9": "评论",
@@ -2508,10 +2508,10 @@
         "jiraColumnOriginalEstimate": "预估",
         "jiraColumnRemainingEstimate": "剩余",
         "jiraBoardEmptyColumn": "没有议题",
-        "labelCountPlural": "{{count}} 标签",
-        "labelCountSingular": "{{count}} 标签",
-        "memberCountPlural": "{{count}} 成员",
-        "memberCountSingular": "{{count}} 成员"
+        "labelCountPlural": "{{count}} 个标签",
+        "labelCountSingular": "{{count}} 个标签",
+        "memberCountPlural": "{{count}} 名成员",
+        "memberCountSingular": "{{count}} 名成员"
       },
       "Terminal": {
         "73768427cf": "关闭",
@@ -3505,10 +3505,10 @@
                 "b4cf68e889": "已跳过 {{value0}} {{value1}}。",
                 "writeTimeout": "文件拖放已取消：终端在安全超时前未接受路径。",
                 "writeRejected": "文件拖放已取消：终端无法接受路径。",
-                "skippedSymlinkSingular": "跳过 {{count}} 符号链接。",
-                "skippedSymlinkPlural": "跳过 {{count}} 符号链接。",
-                "uploadingFileSingular": "正在上传 {{count}} 文件 到运行时...",
-                "uploadingFilePlural": "正在上传 {{count}} 文件 到运行时...",
+                "skippedSymlinkSingular": "已跳过 {{count}} 个符号链接。",
+                "skippedSymlinkPlural": "已跳过 {{count}} 个符号链接。",
+                "uploadingFileSingular": "正在将 {{count}} 个文件上传到运行时…",
+                "uploadingFilePlural": "正在将 {{count}} 个文件上传到运行时…",
                 "uploadingFileToRemoteSingular": "正在将 {{count}} 个文件上传到远程主机…",
                 "uploadingFileToRemotePlural": "正在将 {{count}} 个文件上传到远程主机…"
               }
@@ -6629,8 +6629,8 @@
           "sshConfigPickerRetry": "重试",
           "sshConfigPickerResolving": "阅读…",
           "pairingHelpShareComputer": "在另一台电脑上通过“设置 → 远程 Orca 服务器 → 共享此电脑”创建。",
-          "sshImportSyncedPlural": "已同步 {{count}} 个主机。",
-          "sshImportSyncedSingular": "已同步 {{count}} 个主机。"
+          "sshImportSyncedPlural": "已将 {{count}} 个主机添加到 Orca。",
+          "sshImportSyncedSingular": "已将 {{count}} 个主机添加到 Orca。"
         },
         "ForgetSshWorkspaceDialog": {
           "reconnectFailed": "重新连接失败",
@@ -13712,10 +13712,10 @@
             "entryDeleteFailed": "删除“{{value0}}”失败",
             "entryFailedInWorkspace": "{{value0}} 在 {{value1}} 中",
             "diffCommentNotesCopyFailed": "复制笔记失败",
-            "discardFailedSingular": "无法丢弃 {{count}} 文件",
-            "discardFailedPlural": "无法丢弃 {{count}} 文件",
-            "noteCountSingular": "{{count}} 注",
-            "noteCountPlural": "{{count}} 注"
+            "discardFailedSingular": "无法丢弃 {{count}} 个文件",
+            "discardFailedPlural": "无法丢弃 {{count}} 个文件",
+            "noteCountSingular": "{{count}} 条备注",
+            "noteCountPlural": "{{count}} 条备注"
           },
           "SourceControlAgentActionDialog": {
             "8e856842d1": "无法启动选定的智能体。",
@@ -14839,8 +14839,8 @@
           "d6e5dba05a": "登录",
           "0b4a7d23ab": "登录",
           "a74c6d6b18": "未安装",
-          "linearWorkspacesLinkedSingular": "{{count}} 工作区 已链接。随时添加另一个工作区或更换受限密钥。",
-          "linearWorkspacesLinkedPlural": "{{count}} 工作区 已链接。随时添加另一个工作区或更换受限密钥。"
+          "linearWorkspacesLinkedSingular": "已关联 {{count}} 个工作区。可随时添加其他工作区或更换受限密钥。",
+          "linearWorkspacesLinkedPlural": "已关联 {{count}} 个工作区。可随时添加其他工作区或更换受限密钥。"
         },
         "NotificationStep": {
           "3bede04483": "发送测试通知",

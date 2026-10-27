@@ -6631,8 +6631,8 @@
           "sshConfigPickerRetry": "Probar de nuevo",
           "sshConfigPickerResolving": "Lectura…",
           "pairingHelpShareComputer": "Créalo en Ajustes → Servidores remotos de Orca → Compartir este equipo en el otro equipo.",
-          "sshImportSyncedPlural": "Se sincronizaron {{count}} hosts.",
-          "sshImportSyncedSingular": "Se sincronizó {{count}} host."
+          "sshImportSyncedPlural": "Se agregaron {{count}} hosts a Orca.",
+          "sshImportSyncedSingular": "Se agregó {{count}} host a Orca."
         },
         "ForgetSshWorkspaceDialog": {
           "reconnectFailed": "Error de reconexión",

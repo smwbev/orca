@@ -9,10 +9,11 @@ import { collectSourceFiles } from './verify-localization-catalog.mjs'
 const EN_CATALOG_PATH = path.join('src', 'renderer', 'src', 'i18n', 'locales', 'en.json')
 const PLACEHOLDER_RE = /\{\{[^}]+\}\}/g
 // Extraction misses keys held in data structures or passed as variables, so any literal naming a key keeps it.
-const KEY_LITERAL_SCAN_ROOTS = ['src', 'mobile']
+// Scoped to src/ so only changes that trigger this check can change its verdict.
+const KEY_LITERAL_SCAN_ROOT = 'src'
 const KEY_LITERAL_RE = /['"`]([A-Za-z][\w-]*(?:\.[\w-]+)+)['"`]/g
 const DYNAMIC_KEY_HEAD_RE =
-  /\b(?:t|translate\w*)\(\s*(?:`([A-Za-z][\w.-]*)\$\{|['"]([A-Za-z][\w.-]*)['"]\s*\+)/g
+  /\b(?:t|translate\w*)\(\s*(?:`([A-Za-z][\w-]*\.[\w.-]*)\$\{|['"]([A-Za-z][\w-]*\.[\w.-]*)['"]\s*\+)/g
 // i18next resolves `key_one` etc. from the base key at runtime.
 const PLURAL_SUFFIX_RE = /_(?:zero|one|two|few|many|other)$/
 
@@ -83,20 +84,8 @@ export function collectKeyLiterals(sourceText, evidence) {
 
 async function collectSourceKeyEvidence(root) {
   const evidence = { literals: new Set(), dynamicPrefixes: new Set() }
-  for (const scanRoot of KEY_LITERAL_SCAN_ROOTS) {
-    let files
-    try {
-      files = await collectSourceFiles(root, path.join(root, scanRoot))
-    } catch (error) {
-      // A checkout without the mobile app is still a complete desktop scan.
-      if (scanRoot === 'mobile' && error.code === 'ENOENT') {
-        continue
-      }
-      throw error
-    }
-    for (const file of files) {
-      collectKeyLiterals(await fs.readFile(file, 'utf8'), evidence)
-    }
+  for (const file of await collectSourceFiles(root, path.join(root, KEY_LITERAL_SCAN_ROOT))) {
+    collectKeyLiterals(await fs.readFile(file, 'utf8'), evidence)
   }
   return evidence
 }

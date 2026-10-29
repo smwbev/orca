@@ -64,9 +64,9 @@ const TRANSLATABLE_PLUGIN_CHROME = new Set([
   'auto.components.settings.plugins.search.development',
 
   // Maturity badge on the pane heading: how finished the feature is, not what a plugin may do.
-  'auto.components.settings.PluginsSettingsSection.experimental',
+  'auto.components.settings.PluginsSettingsSection.alpha',
 
-  // Install form labels and blank-field checks; `gitRefRequired` argues for pinning, so stays protected.
+  // Install form labels and blank-field checks; pinning advice and `description` stay protected.
   'auto.components.settings.PluginInstallDialog.cancel',
   'auto.components.settings.PluginInstallDialog.gitLabel',
   'auto.components.settings.PluginInstallDialog.gitPlaceholder',
@@ -81,15 +81,11 @@ const TRANSLATABLE_PLUGIN_CHROME = new Set([
   'auto.components.settings.PluginInstallDialog.source',
   'auto.components.settings.PluginInstallDialog.title',
 
-  // Installed-row log controls and runtime state; trust state and enable/remove/rollback stay protected.
-  'auto.components.settings.PluginSettingsRow.hideLogs',
+  // Installed-row log controls; trust state and enable/disable stay protected.
   'auto.components.settings.PluginSettingsRow.loadingLogs',
   'auto.components.settings.PluginSettingsRow.logCount',
   'auto.components.settings.PluginSettingsRow.moreActions',
   'auto.components.settings.PluginSettingsRow.noLogs',
-  'auto.components.settings.PluginSettingsRow.restartCount',
-  'auto.components.settings.PluginSettingsRow.restarting',
-  'auto.components.settings.PluginSettingsRow.running',
   'auto.components.settings.PluginSettingsRow.viewLogs'
 ])
 

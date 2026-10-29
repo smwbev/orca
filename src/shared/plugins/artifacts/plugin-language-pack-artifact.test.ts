@@ -6,7 +6,7 @@ import {
   validatePluginLanguagePackCatalog,
   pluginLanguageResourceId
 } from './plugin-language-pack-artifact'
-import { translatablePluginChromePaths } from './plugin-translatable-chrome'
+import { translatablePluginChromePaths } from '../languages/plugin-translatable-chrome'
 
 /** Nests a dotted path so the parser walks every container above the exempt leaf. */
 function catalogFor(path: string, value: string): unknown {
@@ -95,15 +95,15 @@ describe('plugin language-pack artifacts', () => {
     }
   )
 
-  // Exempting form and log copy must not expose trust state beside it (`needsReview`, `gitRefRequired`).
+  // Exempting form and log copy must not expose trust state beside it (`killListMessage`, `gitRefRequired`).
   it.each([
-    ['PluginSettingsRow', 'needsReview', 'Проверено'],
-    ['PluginSettingsRow', 'invalid', 'В порядке'],
-    ['PluginSettingsRow', 'viewAdvisory', 'Подробности'],
-    ['PluginSettingsRow', 'blocked', 'Разрешён'],
     ['PluginSettingsRow', 'bundled', 'Проверено Orca'],
-    ['PluginSettingsRow', 'dev', 'Официальный'],
-    ['PluginInstallDialog', 'gitRefRequired', 'Ref не обязателен, ставьте без него.']
+    ['PluginSettingsRow', 'killListMessage', 'Плагин проверен Orca: {{value0}}'],
+    ['PluginSettingsRow', 'invalidPluginError', 'Файлы плагина в порядке.'],
+    ['PluginSettingsRow', 'enableLabel', 'Открыть {{value0}}'],
+    ['PluginInstallDialog', 'description', 'Плагин проверен и включится сам.'],
+    ['PluginInstallDialog', 'gitRefRequired', 'Ref не обязателен, ставьте без него.'],
+    ['PluginInstallDialog', 'gitHelp', 'Версию указывать не нужно']
   ])('still refuses %s.%s beside the newly exempt copy', (component, key, value) => {
     expect(
       parsePluginLanguagePackArtifact(

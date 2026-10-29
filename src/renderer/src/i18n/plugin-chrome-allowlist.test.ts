@@ -49,7 +49,7 @@ describe('translatable plugin chrome', () => {
       PluginDevelopmentSection: 6,
       plugins: 6,
       PluginInstallDialog: 13,
-      PluginSettingsRow: 9
+      PluginSettingsRow: 5
     })
   })
 })

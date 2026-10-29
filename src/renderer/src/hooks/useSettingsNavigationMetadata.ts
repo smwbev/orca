@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import { useShallow } from 'zustand/react/shallow'
 // Share Settings/Cmd+J visibility without Settings pane UI imports; an architecture test enforces this boundary.
 import {
@@ -20,7 +19,7 @@ import { defaultScopeHost } from '@/lib/default-creation-host'
 import { useAppStore } from '@/store'
 import { useProjectHostSetupProjection } from '@/store/selectors'
 import {
-  useChatSettingsTypedPermissions,
+  useChatSettingsOwnPermissions,
   useStructuredAgentSessionHostQueuesMessages
 } from '@/runtime/structured-agent-session-host-capability'
 import type { ProjectGroupingModel } from '../../../shared/project-section-grouping'
@@ -34,6 +33,7 @@ import { buildInterfaceSettingsSections } from './settings-navigation-interface-
 import { buildRemoteSettingsSections } from './settings-navigation-remote-sections'
 import { buildWorkflowSettingsSections } from './settings-navigation-workflow-sections'
 import { useWindowsTerminalCapabilityOwnerKey } from './useWindowsTerminalCapabilityOwnerKey'
+import { useUiLanguageRevision } from '@/i18n/use-ui-language-revision'
 
 export { isWebClientLocation } from '@/lib/web-client-location'
 
@@ -111,8 +111,7 @@ export function buildSettingsNavigationMetadata({
 
 export function useSettingsNavigationMetadata(): SettingsNavSection[] {
   // The locale subscription must also invalidate the memo or labels retain the previous language.
-  const { i18n } = useTranslation()
-  const activeLocale = i18n.language
+  const languageRevision = useUiLanguageRevision()
   const repos = useAppStore((state) => state.repos)
   const projectHostSetupProjection = useProjectHostSetupProjection()
   const settings = useAppStore((state) => state.settings)
@@ -126,7 +125,7 @@ export function useSettingsNavigationMetadata(): SettingsNavSection[] {
     })
   )
   const nativeChatEnabled = settings?.experimentalNativeChat === true
-  const typedChatPermissions = useChatSettingsTypedPermissions()
+  const typedChatPermissions = useChatSettingsOwnPermissions()
   const hostQueuesMessages = useStructuredAgentSessionHostQueuesMessages({ kind: 'local' })
   const isMac = isMacUserAgent()
   const isWindows = isWindowsUserAgent()
@@ -181,7 +180,7 @@ export function useSettingsNavigationMetadata(): SettingsNavSection[] {
           projectHostSetups: projectHostSetupProjection.setups
         }
       }),
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- activeLocale is read implicitly by the translate() calls inside buildSettingsNavigationMetadata; without it the memo keeps the previous language's sections.
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- translate() inside buildSettingsNavigationMetadata reads the UI language and catalogs implicitly.
     [
       isMac,
       isWindows,
@@ -196,7 +195,7 @@ export function useSettingsNavigationMetadata(): SettingsNavSection[] {
       isLinearConnected,
       repos,
       projectHostSetupProjection,
-      activeLocale
+      languageRevision
     ]
   )
 }

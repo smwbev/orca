@@ -148,6 +148,9 @@ export async function acquireAcpStructuredSession(input: {
       onExit: () => input.onExit(session)
     }
   )
+  if (!spec.permissionModeConfig) {
+    options.applied.set('permissionMode', launch.fullAccess ? 'full-access' : 'ask')
+  }
   // From here, cancellation closes this connection even before exit is proven.
   input.track(connection)
   connection.subscribe((event: AcpSessionEvent) =>
@@ -160,6 +163,12 @@ export async function acquireAcpStructuredSession(input: {
           )
         }
         routeAcpSessionEvent({ lane: slot.lane, options }, event, now(), slot.reattaching)
+        if (
+          event.kind === 'known' &&
+          event.notification.update.sessionUpdate === 'available_commands_update'
+        ) {
+          events?.publish()
+        }
       }
       if (
         isAcpReadySession(session) &&
@@ -172,7 +181,8 @@ export async function acquireAcpStructuredSession(input: {
           sessionId,
           fence: acquire.fence,
           acquisitionGeneration: generation,
-          reportedOptions: options.read().current
+          reportedOptions: options.observedCurrent(spec.permissionModeConfig?.values),
+          catalogListing: { models: options.read().models }
         })
       }
     })

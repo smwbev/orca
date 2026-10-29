@@ -1,3 +1,4 @@
+import { assertStructuredAgentResolutionCurrent } from '../native-chat/structured-agent-command-resolution'
 import { activeProviderContext } from '../../shared/agent-session-provider-context'
 import { getClaudeProfileRouter } from '../claude-accounts/claude-profile-installed-router'
 import { requireLegacyAgentSessionAccountHome } from '../../shared/agent-session-account-home'
@@ -5,7 +6,10 @@ import type {
   Options as ClaudeAgentSdkOptions,
   PermissionMode
 } from '@anthropic-ai/claude-agent-sdk'
-import type { AgentChatPermissionMode } from '../../shared/agent-chat-permission-mode'
+import type {
+  AgentChatPermissionChoice,
+  AgentChatPermissionMode
+} from '../../shared/agent-chat-permission-mode'
 import {
   agentSessionProviderHandleKey,
   agentSessionProviderHandleRoot
@@ -20,7 +24,7 @@ import {
   type ClaudeEnvDeps
 } from './claude-structured-child-env'
 import { claudeStructuredLaunchArgs } from './claude-structured-launch-args'
-import type { ClaudeCliFlagSupport } from './claude-cli-flag-support'
+import type { ClaudeCliFlagCheck, ClaudeCliFlagSupport } from './claude-cli-flag-support'
 import { resolveClaudeLaunchFlags } from './claude-structured-launch-flags'
 import { withNativeChatVisualsEnv } from '../native-chat/native-chat-visuals-delivery'
 import {
@@ -28,16 +32,18 @@ import {
   resolveClaudeStructuredLaunchHome
 } from './claude-structured-launch-home'
 import type { StructuredAgentLaunchPartResolver } from '../runtime/structured-agent-launch-composition'
-import { claudeSessionIdForOrcaSession } from './claude-structured-session-id'
+import { claudeSessionIdForOrcaSession } from './structured/claude-structured-session-id'
 import {
   pendingAgentSessionRewindFork,
   type AgentSessionRewindFork
 } from '../../shared/agent-session-rewind'
 
-export { claudeSessionIdForOrcaSession }
-
 export const CLAUDE_DEFAULT_SETTING_SOURCES = ['user', 'project', 'local'] as const
 export const CLAUDE_SESSION_STATE_EVENTS_ENV = 'CLAUDE_CODE_EMIT_SESSION_STATE_EVENTS'
+
+type ClaudePermissionOptions = Pick<ClaudeAgentSdkOptions, 'permissionMode' | 'extraArgs'> & {
+  resolvePermissionModeInCli?: true
+}
 
 export type ClaudeStructuredSdkOptions = Pick<
   ClaudeAgentSdkOptions,
@@ -45,19 +51,18 @@ export type ClaudeStructuredSdkOptions = Pick<
   | 'systemPrompt'
   | 'settingSources'
   | 'supportedDialogKinds'
-  | 'extraArgs'
   | 'additionalDirectories'
   | 'plugins'
   | 'model'
   | 'effort'
-  | 'permissionMode'
   | 'allowDangerouslySkipPermissions'
   | 'settings'
   | 'sessionId'
   | 'resume'
   | 'resumeSessionAt'
   | 'forkSession'
->
+> &
+  ClaudePermissionOptions
 
 /** Replay acknowledgements require an explicit flag; the SDK supplies the other transport flags. */
 export const CLAUDE_STRUCTURED_BASE_OPTIONS: ClaudeStructuredSdkOptions = {
@@ -78,8 +83,12 @@ const CLAUDE_PERMISSION_MODES = {
 
 /** Full access is the owned CLI flag: the SDK's typed bypass emits a flag older binaries reject. */
 export function claudeStructuredPermissionOptions(
-  mode: AgentChatPermissionMode
-): Pick<ClaudeStructuredSdkOptions, 'permissionMode' | 'extraArgs'> {
+  mode: AgentChatPermissionChoice
+): ClaudePermissionOptions {
+  if (mode === 'own') {
+    // upstream request: https://github.com/anthropics/claude-agent-sdk-typescript/issues/519
+    return { resolvePermissionModeInCli: true }
+  }
   return mode === 'full-access'
     ? { extraArgs: { 'dangerously-skip-permissions': null } }
     : { permissionMode: CLAUDE_PERMISSION_MODES[mode] }
@@ -99,6 +108,8 @@ export type ClaudeStructuredLaunch = {
   resumeLeafUuid: string | null
   /** Whether this launch resumes an existing Claude transcript. */
   resumesTranscript: boolean
+  /** Version-gated flag and control support of the CLI this launch runs. */
+  cliFlag: ClaudeCliFlagCheck
   /** Chain identity is independent of whether a transcript exists to resume. */
   continuesChain: boolean
   /** Chain head replaced by this rewind fork. */
@@ -113,7 +124,7 @@ export type ClaudeStructuredLaunchPartDeps = {
   /** Host attachment store outside the workspace, granted to the agent at launch. */
   attachmentDirectory?: string
   /** Omit version-gated flags when support cannot be checked. */
-  cliFlags?: Pick<ClaudeCliFlagSupport, 'supports'>
+  cliFlags?: Pick<ClaudeCliFlagSupport, 'check'>
   /** Whether Claude wrote a transcript for this id; defaults to the transcript resolver. */
   hasTranscript?: (input: {
     providerSessionId: string
@@ -136,7 +147,11 @@ export async function resolveClaudeStructuredInvocation(
   options?: Parameters<typeof claudeChildEnv>[2]
 ): Promise<ClaudeStructuredInvocation> {
   const sources = resolvedSources ?? (await resolveClaudeChildEnvSources(deps))
+  assertStructuredAgentResolutionCurrent(deps.operation)
+  deps.signal?.throwIfAborted()
   const auth = await deps.resolveAuthPolicy()
+  assertStructuredAgentResolutionCurrent(deps.operation)
+  deps.signal?.throwIfAborted()
   // Preserve proxy credentials alongside ANTHROPIC_BASE_URL for every account.
   return {
     command: sources.command,
@@ -261,6 +276,8 @@ export function claudeStructuredLaunchPart(
         providerSessionId,
         resumeLeafUuid: resumesTranscript ? leafUuid : null,
         resumesTranscript,
+        cliFlag: async (flag, ...budget) =>
+          deps.cliFlags ? deps.cliFlags.check(flag, probeLaunch, ...budget) : 'unknown',
         continuesChain,
         ...(fork && head && !continuesChain
           ? { forkedFromKey: agentSessionProviderHandleKey(head) }

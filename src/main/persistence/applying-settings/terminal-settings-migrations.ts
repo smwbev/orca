@@ -1,3 +1,4 @@
+import { homedir } from 'node:os'
 import type { GlobalSettings, OrcaWorkspaceLayout } from '../../../shared/global-settings-types'
 import { normalizeRuntimePathForComparison } from '../../../shared/cross-platform-path'
 import {
@@ -10,6 +11,14 @@ import {
   normalizeTuiAgentArgsRecord,
   normalizeTuiAgentEnvRecord
 } from '../../../shared/tui-agent-launch-defaults'
+import { expandLeadingHomePath } from '../../home-path-expansion'
+
+/** Unexpanded, a leading ~ resolves inside each repo and worktrees land in <repo>/~ (#34944). */
+export function expandWorkspaceDirHome(settings: Partial<GlobalSettings>): Partial<GlobalSettings> {
+  return typeof settings.workspaceDir === 'string'
+    ? { ...settings, workspaceDir: expandLeadingHomePath(settings.workspaceDir, homedir()) }
+    : settings
+}
 
 export function buildWorkspaceDirHistoryForUpdate(
   current: GlobalSettings,
@@ -57,6 +66,7 @@ export function readLegacyTerminalScrollbackSettings(
 }
 
 type RetiredGlobalSettings = {
+  agentNativeChatPermissionModes?: unknown
   setupScriptLaunchMode?: unknown
   terminalScrollbackBytes?: unknown
   enableGitHubAttribution?: unknown
@@ -67,12 +77,15 @@ type RetiredGlobalSettings = {
   opencodeGoApiKey?: unknown
   experimentalStructuredNativeChat?: unknown
   openAgentTabsInChatByDefault?: unknown
+  // Full-access plugins now need only their own approval.
+  pluginFullAccessEnabled?: unknown
 }
 
 export function stripRetiredGlobalSettings(
   settings: Partial<GlobalSettings> | undefined
 ): Partial<GlobalSettings> {
   const {
+    agentNativeChatPermissionModes: _retiredChatPermissionCopies,
     setupScriptLaunchMode: _legacySetupScriptLaunchMode,
     terminalScrollbackBytes: _legacyScrollbackBytes,
     enableGitHubAttribution: _legacyGitHubAttribution,
@@ -81,8 +94,10 @@ export function stripRetiredGlobalSettings(
     opencodeGoApiKey: _legacyOpenCodeGoApiKey,
     experimentalStructuredNativeChat: _legacyStructuredNativeChat,
     openAgentTabsInChatByDefault: _legacyChatDefaultView,
+    pluginFullAccessEnabled: _retiredPluginFullAccessSwitch,
     ...rest
   } = (settings ?? {}) as Partial<GlobalSettings> & RetiredGlobalSettings
+  void _retiredChatPermissionCopies
   void _legacySetupScriptLaunchMode
   void _legacyScrollbackBytes
   void _legacyGitHubAttribution
@@ -91,6 +106,7 @@ export function stripRetiredGlobalSettings(
   void _legacyOpenCodeGoApiKey
   void _legacyStructuredNativeChat
   void _legacyChatDefaultView
+  void _retiredPluginFullAccessSwitch
   return rest
 }
 

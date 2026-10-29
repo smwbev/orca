@@ -1,6 +1,7 @@
 import { expect, vi } from 'vitest'
 import type { Mock } from 'vitest'
 import type * as GitUsernameModule from '../../git/git-username'
+import type * as WslUncAccessGateModule from '../../wsl/wsl-unc-access-gate'
 import type * as FilesystemPathContainmentModule from '../../ipc/filesystem/filesystem-path-containment'
 import { reviewHeadRemoteRefComponent } from '../../../shared/review-head-tracking-ref'
 
@@ -11,6 +12,17 @@ import type { RuntimeMobileSessionTabsResult } from '../../../shared/runtime-typ
 import { setWorktreeWatcherRemoval } from '../../ipc/worktree-watcher-removal'
 
 type TestMock = Mock
+
+const reconcileClaudeAgentViewMock = vi.hoisted(() => vi.fn(async () => {}))
+vi.mock('../../claude/agent-view-service', () => ({
+  getClaudeAgentViewService: () => ({
+    reconcile: reconcileClaudeAgentViewMock,
+    ready: async () => {},
+    readyForLaunch: async () => {},
+    prepareProfile: async () => {},
+    read: () => undefined
+  })
+}))
 
 export const ORIGINAL_PLATFORM = process.platform
 export const ORIGINAL_PLATFORM_DESCRIPTOR = Object.getOwnPropertyDescriptor(process, 'platform')
@@ -280,6 +292,33 @@ vi.mock('../repo-worktree-resolution-scan', () => ({
   scanLocalRepoWorktreesForResolution: scanLocalRepoWorktreesForResolutionMock
 }))
 
+// Fake-win32 runtime tests have no wsl.exe: treat every distro as running unless a test says otherwise.
+vi.mock('../../wsl/wsl-unc-access-gate', async (importOriginal) => {
+  const actual = await importOriginal<typeof WslUncAccessGateModule>()
+  const blockedWslDistroForPath = vi.fn<typeof actual.blockedWslDistroForPath>(async () => null)
+  return {
+    ...actual,
+    blockedWslDistroForPath,
+    // The real guard asks its own module's check, which this mock can't reach; ask the mocked one.
+    guardWslUncPathAccess: vi.fn(
+      async <T>(
+        path: string,
+        access: () => Promise<T>,
+        options: { wake?: boolean; wslDistro?: string | null } = {}
+      ): Promise<T> => {
+        const blocked = options.wake ? null : await blockedWslDistroForPath(path, options.wslDistro)
+        if (blocked?.state === 'stopped') {
+          throw new actual.WslDistroStoppedError(blocked.distro)
+        }
+        if (blocked) {
+          throw new actual.WslDistroUnverifiableError(blocked.distro)
+        }
+        return access()
+      }
+    )
+  }
+})
+
 vi.mock('../../terminal-history-deletion', () => ({
   deleteWorktreeHistoryDir: deleteWorktreeHistoryDirMock
 }))
@@ -330,9 +369,6 @@ vi.mock('../../setup-hook-env-vars', () => ({
 
 vi.mock('../../effective-hook-config', () => ({
   getEffectiveHooksFromConfig: vi.fn().mockReturnValue(null),
-  getDefaultTabCommandTrustContent: vi.fn(
-    (hooks: { scripts?: { setup?: string } } | null) => hooks?.scripts?.setup?.trim() ?? ''
-  ),
   getDefaultTabsLaunch: vi.fn().mockReturnValue(undefined),
   shouldRunSetupForCreate: vi
     .fn()
@@ -601,3 +637,5 @@ export {
   getIssueMock,
   deleteWorktreeHistoryDirMock
 }
+
+export { reconcileClaudeAgentViewMock }

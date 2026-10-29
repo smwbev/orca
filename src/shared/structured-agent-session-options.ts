@@ -8,14 +8,11 @@ import {
 import {
   STRUCTURED_LAUNCH_OPTION_IDS,
   STRUCTURED_LAUNCH_SEED_OPTION_IDS
-} from './native-chat-session-option-defaults'
+} from './native-chat/input/native-chat-session-option-defaults'
 import { AGENT_CHAT_PERMISSION_MODE_OPTION_ID } from './agent-chat-permission-mode'
 import { usesInstalledAgentModelCatalog } from './agent-model-catalog-ownership'
-import {
-  structuredAgentSessionDescribedModel,
-  structuredAgentSessionShownModel
-} from './structured-agent-session-option-snapshot'
-import type { SessionOptionValue } from './native-chat-session-options'
+import { structuredAgentSessionShownModel } from './structured-agent-session-option-snapshot'
+import type { SessionOptionValue } from './native-chat/input/native-chat-session-options'
 import type {
   AgentSessionModelCatalogResult,
   AgentSessionOptionsResult
@@ -62,6 +59,8 @@ export type StructuredAgentSessionOptionState = {
   defaultsUnsent?: true
   /** The permission mode the host or launch last stated; null shows no picker. */
   permissionMode: string | null
+  reportedPermissionMode?: string | null
+  permissionOwnSupported?: boolean | null
   pendingId: string | null
   listingInProgress?: boolean
   fastModeRestricted?: boolean
@@ -179,7 +178,10 @@ export function applyStructuredAgentSessionOptions(
         ? 'default'
         : current.confirmed?.includes(id)
           ? 'reported'
-          : 'dispatched'
+          : id === 'serviceTier' && current.defaulted !== undefined
+            ? 'applied'
+            : 'dispatched',
+    state.record.agent === 'codex' && current.defaulted !== undefined
   )
   return {
     ...state,
@@ -196,7 +198,8 @@ export function applyStructuredAgentSessionOptions(
       : result.listedModelIds?.length
         ? result.listedModelIds
         : undefined,
-    permissionMode: result.current.permissionMode ?? null
+    permissionMode: result.current.permissionMode ?? null,
+    reportedPermissionMode: result.current.reportedPermissionMode
   }
 }
 
@@ -216,7 +219,7 @@ export function commitStructuredAgentSessionOption(
   value: string
 ): StructuredAgentSessionOptionState {
   if (id === AGENT_CHAT_PERMISSION_MODE_OPTION_ID) {
-    return { ...state, permissionMode: value, pendingId: null }
+    return { ...state, permissionMode: value, reportedPermissionMode: undefined, pendingId: null }
   }
   if (!state.catalog) {
     return state
@@ -228,24 +231,6 @@ export function commitStructuredAgentSessionOption(
   // Keep other picks after a model change; the host reconciles independent values.
   state.record.values[id] = { value: decoded, source: 'dispatched' }
   return { ...state, pendingId: null }
-}
-
-/** Before launch no host can reconcile held picks; keep only values offered by the model’s controls.
- * An undescribed model preserves all values because no listing can disprove them. */
-export function structuredAgentSessionModelOffers(
-  state: Pick<StructuredAgentSessionOptionState, 'catalog' | 'verifiedModelIds'>,
-  modelId: string,
-  id: string,
-  value: SessionOptionValue
-): boolean {
-  const model = structuredAgentSessionDescribedModel(state, modelId)
-  if (id === 'model' || id === AGENT_CHAT_PERMISSION_MODE_OPTION_ID || !model) {
-    return true
-  }
-  const option = model.options.find((entry) => entry.id === id)
-  return option?.kind.type === 'select'
-    ? option.kind.choices.some((choice) => choice.value === value)
-    : option !== undefined
 }
 
 export function commitStructuredAgentSessionOptionValues(
